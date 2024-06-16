@@ -20,6 +20,8 @@ package main
 
 type game struct {
 	currentPlay tetris
+	score       int
+	level       int
 }
 
 func (g *game) init() {

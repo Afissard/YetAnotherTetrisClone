@@ -25,12 +25,13 @@ import (
 
 func (g *game) Update() (err error) {
 
-	g.currentPlay.update(
+	g.score += g.currentPlay.update(
 		ebiten.IsKeyPressed(ebiten.KeyDown),
 		ebiten.IsKeyPressed(ebiten.KeyLeft),
 		ebiten.IsKeyPressed(ebiten.KeyRight),
 		inpututil.IsKeyJustPressed(ebiten.KeySpace),
 		inpututil.IsKeyJustPressed(ebiten.KeyEnter),
+		g.level,
 	)
 
 	return nil

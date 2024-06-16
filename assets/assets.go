@@ -36,6 +36,10 @@ var ImageSquares *ebiten.Image
 var imageBackBytes []byte
 var ImageBack *ebiten.Image
 
+//go:embed digits.png
+var imageDigitsBytes []byte
+var ImageDigits *ebiten.Image
+
 func Load() {
 	var err error
 
@@ -50,4 +54,10 @@ func Load() {
 		log.Fatal(err)
 	}
 	ImageBack = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageDigitsBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageDigits = ebiten.NewImageFromImage(imageDecoded)
 }

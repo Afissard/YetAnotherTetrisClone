@@ -43,6 +43,8 @@ type tetris struct {
 	lrFirstMoveFrame      int
 	lrFirstMoveFrameLimit int
 	manualMoveAllowed     bool
+	numLines              int
+	dropLenght            int
 }
 
 func (t *tetris) init() {
@@ -59,9 +61,11 @@ func (t *tetris) init() {
 	t.lrFirstMoveFrame = 0
 	t.lrFirstMoveFrameLimit = 15
 	t.manualMoveAllowed = true
+	t.numLines = 0
+	t.dropLenght = 0
 }
 
-func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool) {
+func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool, level int) (scoreIncrease int) {
 
 	if rotateLeft {
 		t.currentBlock.rotateLeft(t.area)
@@ -120,6 +124,7 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 	if !moveDownRequest {
 		t.manualDownFrame = 0
 		t.manualMoveAllowed = t.manualMoveAllowed || mayAllowManualMoves
+		t.dropLenght = 0
 	}
 
 	if moveDownRequest && t.manualMoveAllowed {
@@ -130,11 +135,30 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 		}
 	}
 
+	if manualDown {
+		t.dropLenght++
+	}
+
 	// update position according to movements requests
 	if t.currentBlock.updatePosition(xMove, autoDown || manualDown, t.area) {
 		toCheck := t.currentBlock.writeInGrid(&t.area)
 
-		t.checkLinesAndUpdate(toCheck)
+		scoreIncrease = t.dropLenght
+
+		destroyedLines := t.checkLinesAndUpdate(toCheck)
+
+		switch destroyedLines {
+		case 1:
+			scoreIncrease += 40 * (level + 1)
+		case 2:
+			scoreIncrease += 100 * (level + 1)
+		case 3:
+			scoreIncrease += 300 * (level + 1)
+		case 4:
+			scoreIncrease += 1200 * (level + 1)
+		}
+		t.numLines += destroyedLines
+
 		if t.lost() {
 			t.init()
 		}
@@ -145,15 +169,16 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 
 		t.manualMoveAllowed = false
 	}
+
+	return
 }
 
 // check if the lines in toCheck are complete
 // if so, remove them and update the grid
-func (t *tetris) checkLinesAndUpdate(toCheck [2]int) {
+func (t *tetris) checkLinesAndUpdate(toCheck [2]int) (toRemove int) {
 
 	checkSize := toCheck[1] - toCheck[0] + 1
 	remove := make([]bool, checkSize)
-	toRemove := 0
 	count := -1
 	firstAvailable := toCheck[0] - 1
 
@@ -198,6 +223,8 @@ CheckLoop:
 		}
 
 	}
+
+	return
 
 }
 

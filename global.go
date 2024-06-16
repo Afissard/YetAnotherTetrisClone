@@ -44,5 +44,12 @@ const (
 	gLinesToNext        int = 8  // distance from lines bottom to next top
 	gInfoShiftNext      int = 7  // distance from info side to next
 
+	gXLinesFromRightSide int = 20                   // distance from right of screen to right of lines
+	gYLinesFromTop       int = 80                   // distance from top of screen to top of lines
+	gXScoreFromRightSide int = 12                   // distance from right of screen to right of score
+	gYScoreFromTop       int = 25                   // distance from top of screen to top of score
+	gXLevelFromRightSide int = gXLinesFromRightSide // distance from right of screen to right of level
+	gYLevelFromTop       int = 56                   // distance from top of screen to top of score
+
 	gInvisibleLines int = 3 // number of hidden lines above the grid
 )
