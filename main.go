@@ -18,7 +18,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/loig/ebitenginegamejam2024/assets"
+)
 
 func main() {
 
@@ -27,6 +30,8 @@ func main() {
 
 	ebiten.SetWindowTitle("Yet Another Tetris Clone")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+
+	assets.Load()
 
 	if err := ebiten.RunGame(&g); err != nil {
 		panic(err)

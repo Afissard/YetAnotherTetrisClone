@@ -19,50 +19,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 import (
-	"image/color"
-
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
+	"github.com/loig/ebitenginegamejam2024/assets"
 )
 
 func (g *game) Draw(screen *ebiten.Image) {
 
-	// draw backgrounds from left to right
+	// draw background
 
-	var leftShift float32
-
-	vector.DrawFilledRect(screen, leftShift, 0, float32(gMultFactor*gPlayAreaSide), float32(gMultFactor*gPlayAreaHeight), color.Gray{Y: 128}, false)
-
-	leftShift += float32(gMultFactor * gPlayAreaSide)
-
-	vector.DrawFilledRect(screen, leftShift, 0, float32(gMultFactor*gPlayAreaWidth), float32(gMultFactor*gPlayAreaHeight), color.White, false)
-
-	leftShift += float32(gMultFactor * gPlayAreaWidth)
-
-	vector.DrawFilledRect(screen, leftShift, 0, float32(gMultFactor*gPlayAreaSide), float32(gMultFactor*gPlayAreaHeight), color.Gray{Y: 128}, false)
-
-	leftShift += float32(gMultFactor * gPlayAreaSide)
-
-	// draw info boxes from top to bottom
-
-	leftShift += float32(gMultFactor * gInfoLeftSide)
-
-	var topShift float32 = float32(gMultFactor * gInfoTop)
-
-	vector.DrawFilledRect(screen, leftShift, topShift, float32(gMultFactor*gInfoWidth), float32(gMultFactor*gInfoSmallBoxHeight), color.Gray{Y: 128}, false)
-
-	topShift += float32(gMultFactor * (gInfoSmallBoxHeight + gScoreToLevel))
-
-	vector.DrawFilledRect(screen, leftShift, topShift, float32(gMultFactor*gInfoWidth), float32(gMultFactor*gInfoBoxHeight), color.Gray{Y: 128}, false)
-
-	topShift += float32(gMultFactor * (gInfoBoxHeight + gLevelToLines))
-
-	vector.DrawFilledRect(screen, leftShift, topShift, float32(gMultFactor*gInfoWidth), float32(gMultFactor*gInfoBoxHeight), color.Gray{Y: 128}, false)
-
-	topShift += float32(gMultFactor * (gInfoBoxHeight + gLinesToNext))
-	leftShift += float32(gMultFactor * (gInfoWidth - gNextBoxSide))
-
-	vector.DrawFilledRect(screen, leftShift, topShift, float32(gMultFactor*gNextBoxSide), float32(gMultFactor*gNextBoxSide), color.Gray{Y: 128}, false)
+	options := ebiten.DrawImageOptions{}
+	screen.DrawImage(assets.ImageBack, &options)
 
 	// draw current play
 

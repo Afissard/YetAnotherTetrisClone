@@ -20,7 +20,7 @@ package main
 
 // styles for blocks
 const (
-	noStyle int = iota
+	noStyle int = iota // it is important that noStyle is 0
 	iBlockStyle
 	oBlockStyle
 	jBlockStyle

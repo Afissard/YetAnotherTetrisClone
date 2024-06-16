@@ -19,8 +19,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 const (
-	gWidth  int = gMultFactor * (gPlayAreaWidth + 2*gPlayAreaSide + gInfoLeftSide + gInfoWidth + gInfoRightSide)
-	gHeight int = gMultFactor * gPlayAreaHeight
+	gWidth  int = gPlayAreaWidth + 2*gPlayAreaSide + gInfoLeftSide + gInfoWidth + gInfoRightSide
+	gHeight int = gPlayAreaHeight
 
 	gSquareSideSize int = 8 // basic block size in pixels
 
@@ -29,21 +29,20 @@ const (
 
 	gPlayAreaWidth  int = gPlayAreaWidthInBlocks * gSquareSideSize  // width of play area in pixels
 	gPlayAreaHeight int = gPlayAreaHeightInBlocks * gSquareSideSize // height of play area in pixels
-	gPlayAreaSide   int = 10                                        // play area side shift in pixels
+	gPlayAreaSide   int = 9                                         // play area side shift in pixels
 
-	gInfoLeftSide       int = 6                   // info left side shift in pixels
-	gInfoWidth          int = 6 * gSquareSideSize // info width in pixels
-	gInfoRightSide      int = 6                   // info right side shift in pixels
-	gInfoBoxHeight      int = 3 * gSquareSideSize // height of standard info box in pixels
-	gNextMargin         int = 4
-	gNextBoxSide        int = 4*gSquareSideSize + gNextMargin*2 // side of box displaying next piece in pixels
-	gInfoSmallBoxHeight int = 2 * gSquareSideSize               // height of small info box
-	gInfoTop            int = 4                                 // info top shift in pixel
-	gScoreToLevel       int = 24                                // distance from score bottom to level top
-	gLevelToLines       int = 2                                 // distance from level bottom to lines top
-	gLinesToNext        int = 6                                 // distance from lines bottom to next top
-
-	gMultFactor int = 1 // multiplicative factor in case increasing size is needed
+	gInfoLeftSide       int = 8  // info left side shift in pixels
+	gInfoWidth          int = 46 // info width in pixels
+	gInfoRightSide      int = 8  // info right side shift in pixels
+	gInfoBoxHeight      int = 22 // height of standard info box in pixels
+	gNextMargin         int = 5
+	gNextBoxSide        int = 42 // side of box displaying next piece in pixels
+	gInfoSmallBoxHeight int = 14 // height of small info box
+	gInfoTop            int = 6  // info top shift in pixel
+	gScoreToLevel       int = 25 // distance from score bottom to level top
+	gLevelToLines       int = 2  // distance from level bottom to lines top
+	gLinesToNext        int = 8  // distance from lines bottom to next top
+	gInfoShiftNext      int = 7  // distance from info side to next
 
 	gInvisibleLines int = 3 // number of hidden lines above the grid
 )

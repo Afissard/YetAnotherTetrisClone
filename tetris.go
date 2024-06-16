@@ -19,11 +19,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 import (
-	"image/color"
+	"image"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
+	"github.com/loig/ebitenginegamejam2024/assets"
 )
 
 type tetrisLine = [gPlayAreaWidthInBlocks]int
@@ -239,20 +239,23 @@ func getNewBlock() (block tetrisBlock) {
 
 func (t tetris) draw(screen *ebiten.Image) {
 
-	xNextOrigin := gMultFactor * (gPlayAreaSide + gPlayAreaWidth + gPlayAreaSide + gInfoLeftSide + (gInfoWidth - gNextBoxSide) + gNextMargin)
-	yNextOrigin := gMultFactor * (gInfoTop + gInfoSmallBoxHeight + gScoreToLevel + gInfoBoxHeight + gLevelToLines + gInfoBoxHeight + gLinesToNext + gNextMargin)
+	xNextOrigin := gPlayAreaSide + gPlayAreaWidth + gPlayAreaSide + gInfoLeftSide + gInfoShiftNext + gNextMargin
+	yNextOrigin := gInfoTop + gInfoSmallBoxHeight + gScoreToLevel + gInfoBoxHeight + gLevelToLines + gInfoBoxHeight + gLinesToNext + gNextMargin
 
 	t.nextBlock.draw(screen, xNextOrigin, yNextOrigin)
 
-	xOrigin := gMultFactor * gPlayAreaSide
-	yOrigin := gMultFactor * gSquareSideSize * -gInvisibleLines
+	xOrigin := gPlayAreaSide
+	yOrigin := gSquareSideSize * -gInvisibleLines
 
 	t.currentBlock.draw(screen, xOrigin, yOrigin)
 
 	for y, line := range t.area {
-		for x, v := range line {
-			if v != 0 {
-				vector.DrawFilledRect(screen, float32(xOrigin+x*gSquareSideSize), float32(yOrigin+y*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 40}, false)
+		for x, style := range line {
+			if style != noStyle {
+
+				options := ebiten.DrawImageOptions{}
+				options.GeoM.Translate(float64(xOrigin+x*gSquareSideSize), float64(yOrigin+y*gSquareSideSize))
+				screen.DrawImage(assets.ImageSquares.SubImage(image.Rect((style-1)*gSquareSideSize, 0, style*gSquareSideSize, gSquareSideSize)).(*ebiten.Image), &options)
 			}
 		}
 	}

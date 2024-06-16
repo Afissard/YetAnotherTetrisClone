@@ -19,10 +19,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 import (
-	"image/color"
+	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
+	"github.com/loig/ebitenginegamejam2024/assets"
 )
 
 type tetrisBlock struct {
@@ -145,7 +145,10 @@ func (t tetrisBlock) draw(screen *ebiten.Image, xFrom, yFrom int) {
 		for xRel, square := range line {
 			if square {
 				xAbs := t.x + xRel
-				vector.DrawFilledRect(screen, float32(xFrom+xAbs*gSquareSideSize), float32(yFrom+yAbs*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 40}, false)
+
+				options := ebiten.DrawImageOptions{}
+				options.GeoM.Translate(float64(xFrom+xAbs*gSquareSideSize), float64(yFrom+yAbs*gSquareSideSize))
+				screen.DrawImage(assets.ImageSquares.SubImage(image.Rect((t.style-1)*gSquareSideSize, 0, t.style*gSquareSideSize, gSquareSideSize)).(*ebiten.Image), &options)
 			}
 		}
 	}
