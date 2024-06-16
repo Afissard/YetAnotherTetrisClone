@@ -18,6 +18,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
+// styles for blocks
+const (
+	noStyle int = iota
+	iBlockStyle
+	oBlockStyle
+	jBlockStyle
+	lBlockStyle
+	sBlockStyle
+	tBlockStyle
+	zBlockStyle
+)
+
 func getIBlock() tetrisBlock {
 	return tetrisBlock{
 		style: iBlockStyle,

@@ -42,6 +42,7 @@ type tetris struct {
 	lrMoveFrameLimit      int
 	lrFirstMoveFrame      int
 	lrFirstMoveFrameLimit int
+	manualMoveAllowed     bool
 }
 
 func (t *tetris) init() {
@@ -57,6 +58,7 @@ func (t *tetris) init() {
 	t.lrMoveFrameLimit = 6
 	t.lrFirstMoveFrame = 0
 	t.lrFirstMoveFrameLimit = 15
+	t.manualMoveAllowed = true
 }
 
 func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool) {
@@ -69,6 +71,8 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 		t.currentBlock.rotateRight(t.area)
 	}
 
+	mayAllowManualMoves := false
+
 	// left/right movements of blocks handling
 	xMove := 0
 	if moveLeftRequest {
@@ -79,8 +83,13 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 	}
 
 	if !moveLeftRequest && !moveRightRequest {
+		mayAllowManualMoves = true
 		t.lrMoveFrame = 0
 		t.lrFirstMoveFrame = 0
+	}
+
+	if !t.manualMoveAllowed {
+		xMove = 0
 	}
 
 	if xMove != 0 {
@@ -110,9 +119,10 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 
 	if !moveDownRequest {
 		t.manualDownFrame = 0
+		t.manualMoveAllowed = t.manualMoveAllowed || mayAllowManualMoves
 	}
 
-	if moveDownRequest {
+	if moveDownRequest && t.manualMoveAllowed {
 		manualDown = t.manualDownFrame == 0
 		t.manualDownFrame++
 		if t.manualDownFrame >= t.manualDownFrameLimit {
@@ -132,6 +142,8 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 		t.currentBlock = t.nextBlock
 		t.currentBlock.setInitialPosition()
 		t.nextBlock = getNewBlock()
+
+		t.manualMoveAllowed = false
 	}
 }
 
@@ -246,19 +258,3 @@ func (t tetris) draw(screen *ebiten.Image) {
 	}
 
 }
-
-// styles for blocks
-const (
-	normalKind int = iota
-)
-
-const (
-	noStyle int = iota
-	iBlockStyle
-	oBlockStyle
-	jBlockStyle
-	lBlockStyle
-	sBlockStyle
-	tBlockStyle
-	zBlockStyle
-)
