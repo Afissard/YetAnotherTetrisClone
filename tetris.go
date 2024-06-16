@@ -243,13 +243,15 @@ func getNewBlock() tetrisBlock {
 
 	var block tetrisBlock
 
-	switch rand.Intn(3) {
+	switch rand.Intn(4) {
 	case 0:
 		block = &tBlock{}
 	case 1:
 		block = &squareBlock{}
 	case 2:
 		block = &lBlock{}
+	case 3:
+		block = &jBlock{}
 	}
 
 	block.setStyle(normalKind)
@@ -290,7 +292,258 @@ const (
 	squareBlockStyle
 	tBlockStyle
 	lBlockStyle
+	jBlockStyle
 )
+
+// J block
+/*
+//  r =
+//	 0    1     2   3
+//	      #   #     ##
+//  #o#   o   #o#   o
+//    #  ##         #
+*/
+type jBlock struct {
+	x, y  int // position of "o" in squares
+	style int // style for constituting squares
+	r     int // rotation state
+}
+
+func (b *jBlock) setStyle(kindOfBlock int) {
+	b.style = jBlockStyle
+}
+
+func (b *jBlock) setWaitPosition() {
+	b.x = 1
+	b.y = 1
+}
+
+func (b *jBlock) setInitialPosition() {
+	b.x = 4
+	b.y = 2
+}
+
+func (b jBlock) canRotateInGridLimits(grid tetrisGrid) bool {
+	return b.r == 0 ||
+		(b.r == 1 && b.x+1 < len(grid[b.y])) ||
+		(b.r == 2 && b.y+1 < len(grid)) ||
+		(b.r == 3 && b.x-1 >= 0)
+}
+
+func (b jBlock) canRotateTo(grid tetrisGrid, r int) bool {
+	return (r == 1 && grid[b.y-1][b.x] == 0 && grid[b.y+1][b.x] == 0 && grid[b.y+1][b.x-1] == 0) ||
+		(r == 2 && grid[b.y-1][b.x-1] == 0 && grid[b.y][b.x+1] == 0 && grid[b.y][b.x-1] == 0) ||
+		(r == 3 && grid[b.y-1][b.x] == 0 && grid[b.y+1][b.x] == 0 && grid[b.y-1][b.x+1] == 0) ||
+		(r == 0 && grid[b.y+1][b.x+1] == 0 && grid[b.y][b.x-1] == 0 && grid[b.y][b.x+1] == 0)
+}
+
+func (b *jBlock) rotateLeft(grid tetrisGrid) {
+
+	if !b.canRotateInGridLimits(grid) {
+		return
+	}
+
+	goal := (b.r + 3) % 4
+
+	if b.canRotateTo(grid, goal) {
+		b.r = goal
+	}
+}
+
+func (b *jBlock) rotateRight(grid tetrisGrid) {
+
+	if !b.canRotateInGridLimits(grid) {
+		return
+	}
+
+	goal := (b.r + 1) % 4
+
+	if b.canRotateTo(grid, goal) {
+		b.r = goal
+	}
+}
+
+func (b *jBlock) moveLeft(grid tetrisGrid) {
+
+	// grid limit
+	if (b.r != 3 && b.x-2 < 0) ||
+		(b.r == 3 && b.x-1 < 0) {
+		return
+	}
+
+	// top block
+	if (b.r == 1 && grid[b.y-1][b.x-1] != 0) ||
+		(b.r == 2 && grid[b.y-1][b.x-2] != 0) ||
+		(b.r == 3 && grid[b.y-1][b.x-1] != 0) {
+		return
+	}
+
+	// center block
+	if ((b.r == 0 || b.r == 2) && grid[b.y][b.x-2] != 0) ||
+		((b.r == 1 || b.r == 3) && grid[b.y][b.x-1] != 0) {
+		return
+	}
+
+	// bottom block
+	if (b.r == 0 && grid[b.y+1][b.x] != 0) ||
+		(b.r == 1 && grid[b.y+1][b.x-2] != 0) ||
+		(b.r == 3 && grid[b.y+1][b.x-1] != 0) {
+		return
+	}
+
+	b.x--
+}
+
+func (b *jBlock) moveRight(grid tetrisGrid) {
+
+	// grid limit
+	if (b.r != 1 && b.x+2 >= len(grid[b.y])) ||
+		(b.r == 1 && b.x+1 >= len(grid[b.y])) {
+		return
+	}
+
+	// top block
+	if (b.r == 1 && grid[b.y-1][b.x+1] != 0) ||
+		(b.r == 2 && grid[b.y-1][b.x] != 0) ||
+		(b.r == 3 && grid[b.y-1][b.x+2] != 0) {
+		return
+	}
+
+	// center block
+	if ((b.r == 0 || b.r == 2) && grid[b.y][b.x+2] != 0) ||
+		((b.r == 1 || b.r == 3) && grid[b.y][b.x+1] != 0) {
+		return
+	}
+
+	// bottom block
+	if (b.r == 0 && grid[b.y+1][b.x+2] != 0) ||
+		(b.r == 1 && grid[b.y+1][b.x+1] != 0) ||
+		(b.r == 3 && grid[b.y+1][b.x+1] != 0) {
+		return
+	}
+
+	b.x++
+}
+
+func (b *jBlock) moveDown(grid tetrisGrid) (stuck bool) {
+
+	// grid limit
+	if b.r != 2 && b.y+2 >= len(grid) ||
+		b.r == 2 && b.y+1 >= len(grid) {
+		return true
+	}
+
+	// left block
+	if (b.r == 0 && grid[b.y+1][b.x-1] != 0) ||
+		(b.r == 1 && grid[b.y+2][b.x-1] != 0) ||
+		(b.r == 2 && grid[b.y+1][b.x-1] != 0) {
+		return true
+	}
+
+	// center block
+	if (b.r == 0 || b.r == 2) && grid[b.y+1][b.x] != 0 {
+		return true
+	}
+	if (b.r == 1 || b.r == 3) && grid[b.y+2][b.x] != 0 {
+		return true
+	}
+
+	// right block
+	if (b.r == 0 && grid[b.y+2][b.x+1] != 0) ||
+		(b.r == 2 && grid[b.y+1][b.x+1] != 0) ||
+		(b.r == 3 && grid[b.y][b.x+1] != 0) {
+		return true
+	}
+
+	b.y++
+	return
+}
+
+func (b *jBlock) writeInGrid(grid *tetrisGrid) (toCheck [2]int) {
+
+	grid[b.y][b.x] = b.style
+
+	if b.r == 1 || b.r == 3 {
+		// top and bottom
+		grid[b.y-1][b.x] = b.style
+		grid[b.y+1][b.x] = b.style
+	}
+
+	if b.r == 0 || b.r == 2 {
+		// left and right
+		grid[b.y][b.x-1] = b.style
+		grid[b.y][b.x+1] = b.style
+	}
+
+	// diag bottom left
+	if b.r == 1 {
+		grid[b.y+1][b.x-1] = b.style
+	}
+
+	// diag top left
+	if b.r == 2 {
+		grid[b.y-1][b.x-1] = b.style
+	}
+
+	// diag top right
+	if b.r == 3 {
+		grid[b.y-1][b.x+1] = b.style
+	}
+
+	// diag bottom right
+	if b.r == 0 {
+		grid[b.y+1][b.x+1] = b.style
+	}
+
+	toCheck = [2]int{b.y, b.y}
+	if b.r != 0 {
+		toCheck[0] -= 1
+	}
+	if b.r != 2 {
+		toCheck[1] += 1
+	}
+
+	return
+}
+
+func (b *jBlock) draw(screen *ebiten.Image, x, y int) {
+	// center
+	vector.DrawFilledRect(screen, float32(x+b.x*gSquareSideSize), float32(y+b.y*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+
+	if b.r == 1 || b.r == 3 {
+		// top
+		vector.DrawFilledRect(screen, float32(x+b.x*gSquareSideSize), float32(y+(b.y-1)*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+		// bottom
+		vector.DrawFilledRect(screen, float32(x+b.x*gSquareSideSize), float32(y+(b.y+1)*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+
+	if b.r == 0 || b.r == 2 {
+		// right
+		vector.DrawFilledRect(screen, float32(x+(b.x+1)*gSquareSideSize), float32(y+b.y*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+		// left
+		vector.DrawFilledRect(screen, float32(x+(b.x-1)*gSquareSideSize), float32(y+b.y*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+
+	// diag bottom left
+	if b.r == 1 {
+		vector.DrawFilledRect(screen, float32(x+(b.x-1)*gSquareSideSize), float32(y+(b.y+1)*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+
+	// diag top left
+	if b.r == 2 {
+		vector.DrawFilledRect(screen, float32(x+(b.x-1)*gSquareSideSize), float32(y+(b.y-1)*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+
+	// diag top right
+	if b.r == 3 {
+		vector.DrawFilledRect(screen, float32(x+(b.x+1)*gSquareSideSize), float32(y+(b.y-1)*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+
+	// diag bottom right
+	if b.r == 0 {
+		vector.DrawFilledRect(screen, float32(x+(b.x+1)*gSquareSideSize), float32(y+(b.y+1)*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+}
 
 // L block
 /*
