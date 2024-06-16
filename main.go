@@ -22,12 +22,13 @@ import "github.com/hajimehoshi/ebiten/v2"
 
 func main() {
 
-	g := &game{}
+	g := game{}
+	g.init()
 
 	ebiten.SetWindowTitle("Yet Another Tetris Clone")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
-	if err := ebiten.RunGame(g); err != nil {
+	if err := ebiten.RunGame(&g); err != nil {
 		panic(err)
 	}
 
