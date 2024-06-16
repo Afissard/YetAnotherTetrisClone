@@ -18,7 +18,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+)
 
 func (g *game) Update() (err error) {
 
@@ -26,7 +29,9 @@ func (g *game) Update() (err error) {
 		ebiten.IsKeyPressed(ebiten.KeyDown),
 		ebiten.IsKeyPressed(ebiten.KeyLeft),
 		ebiten.IsKeyPressed(ebiten.KeyRight),
-		false, false)
+		inpututil.IsKeyJustPressed(ebiten.KeySpace),
+		inpututil.IsKeyJustPressed(ebiten.KeyEnter),
+	)
 
 	return nil
 }

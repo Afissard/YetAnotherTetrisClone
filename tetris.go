@@ -20,6 +20,8 @@ package main
 
 import (
 	"image/color"
+	"log"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -183,7 +185,7 @@ func (t *tetris) checkLinesAndUpdate(toCheck [2]int) {
 
 	// get the lines that will disapear
 CheckLoop:
-	for l := toCheck[1]; l >= toCheck[0]; l-- {
+	for l := toCheck[0]; l <= toCheck[1]; l++ {
 		count++
 		for x := 0; x < len(t.area[l]); x++ {
 			if t.area[l][x] == 0 {
@@ -201,12 +203,14 @@ CheckLoop:
 		// in the removal zone
 		for y := toCheck[1]; y >= toCheck[0]; y-- {
 			if firstAvailable >= 0 {
+				log.Print(y, firstAvailable)
 				t.area[y] = t.area[firstAvailable]
 				firstAvailable--
-				for firstAvailable >= toCheck[0] && remove[toCheck[1]-firstAvailable] {
+				for firstAvailable >= toCheck[0] && remove[firstAvailable-toCheck[0]] {
 					firstAvailable--
 				}
 			} else {
+				log.Print(y, "vide")
 				t.area[y] = tetrisLine{}
 			}
 		}
@@ -214,9 +218,11 @@ CheckLoop:
 		// above the removal zone
 		for y := toCheck[0] - 1; y >= 0; y-- {
 			if firstAvailable >= 0 {
+				log.Print(y, firstAvailable)
 				t.area[y] = t.area[firstAvailable]
 				firstAvailable--
 			} else {
+				log.Print(y, "vide")
 				t.area[y] = tetrisLine{}
 			}
 		}
@@ -240,12 +246,19 @@ func (t tetris) lost() bool {
 
 func getNewBlock() tetrisBlock {
 
-	block := squareBlock{}
+	var block tetrisBlock
+
+	switch rand.Intn(2) {
+	case 0:
+		block = &tBlock{}
+	case 1:
+		block = &squareBlock{}
+	}
 
 	block.setStyle(normalKind)
 	block.setWaitPosition()
 
-	return &block
+	return block
 }
 
 func (t tetris) draw(screen *ebiten.Image) {
@@ -278,7 +291,188 @@ const (
 const (
 	noStyle int = iota
 	squareBlockStyle
+	tBlockStyle
 )
+
+// T block
+//
+//	r =
+//	 0    1   2   3
+//	      #   #   #
+//	#o#  #o  #o#  o#
+//	 #    #       #
+type tBlock struct {
+	x, y  int // position of "o" in squares
+	style int // style for constituting squares
+	r     int // rotation state
+}
+
+func (b *tBlock) setStyle(kindOfBlock int) {
+	b.style = tBlockStyle
+}
+
+func (b *tBlock) setWaitPosition() {
+	b.x = 1
+	b.y = 1
+}
+
+func (b *tBlock) setInitialPosition() {
+	b.x = 4
+	b.y = 2
+}
+
+func (b tBlock) canRotate(grid tetrisGrid) bool {
+
+	return (b.r == 0 && grid[b.y-1][b.x] == 0) ||
+		(b.r == 1 && b.x+1 < len(grid[b.y]) && grid[b.y][b.x+1] == 0) ||
+		(b.r == 2 && b.y+1 < len(grid) && grid[b.y+1][b.x] == 0) ||
+		(b.r == 3 && b.x-1 >= 0 && grid[b.y][b.x-1] == 0)
+}
+
+func (b *tBlock) rotateLeft(grid tetrisGrid) {
+
+	if !b.canRotate(grid) {
+		return
+	}
+
+	b.r = (b.r + 3) % 4
+}
+
+func (b *tBlock) rotateRight(grid tetrisGrid) {
+
+	if !b.canRotate(grid) {
+		return
+	}
+
+	b.r = (b.r + 1) % 4
+}
+
+func (b *tBlock) moveLeft(grid tetrisGrid) {
+	// area border
+	if (b.r != 3 && b.x-2 < 0) ||
+		(b.r == 3 && b.x-1 < 0) {
+		return
+	}
+
+	// blocked on top
+	if b.r != 0 &&
+		grid[b.y-1][b.x-1] != 0 {
+		return
+	}
+
+	// blocked on bottom
+	if b.r != 2 &&
+		grid[b.y+1][b.x-1] != 0 {
+		return
+	}
+
+	// blocked on center
+	if (b.r == 3 && grid[b.y][b.x-1] != 0) ||
+		(b.r != 3 && grid[b.y][b.x-2] != 0) {
+		return
+	}
+
+	b.x--
+}
+
+func (b *tBlock) moveRight(grid tetrisGrid) {
+
+	// area border
+	if (b.r != 1 && b.x+2 >= len(grid[b.y])) ||
+		(b.r == 1 && b.x+1 >= len(grid[b.y])) {
+		return
+	}
+
+	// blocked on top
+	if b.r != 0 &&
+		grid[b.y-1][b.x+1] != 0 {
+		return
+	}
+
+	// blocked on bottom
+	if b.r != 2 &&
+		grid[b.y+1][b.x+1] != 0 {
+		return
+	}
+
+	// blocked on center
+	if (b.r == 1 && grid[b.y][b.x+1] != 0) ||
+		(b.r != 1 && grid[b.y][b.x+2] != 0) {
+		return
+	}
+
+	b.x++
+}
+
+func (b *tBlock) moveDown(grid tetrisGrid) (stuck bool) {
+	if (b.r != 2 && b.y+2 >= len(grid)) ||
+		(b.r == 2 && b.y+1 >= len(grid)) ||
+		(b.r != 3 && grid[b.y+1][b.x-1] != 0) ||
+		(b.r != 2 && grid[b.y+2][b.x] != 0) ||
+		(b.r == 2 && grid[b.y+1][b.x] != 0) ||
+		(b.r != 1 && grid[b.y+1][b.x+1] != 0) {
+		return true
+	}
+
+	b.y++
+	return
+}
+
+func (b *tBlock) writeInGrid(grid *tetrisGrid) (toCheck [2]int) {
+
+	grid[b.y][b.x] = b.style
+
+	// top square
+	if b.r != 0 {
+		grid[b.y-1][b.x] = b.style
+	}
+
+	// right square
+	if b.r != 1 {
+		grid[b.y][b.x+1] = b.style
+	}
+
+	// bottom square
+	if b.r != 2 {
+		grid[b.y+1][b.x] = b.style
+	}
+
+	// left square
+	if b.r != 3 {
+		grid[b.y][b.x-1] = b.style
+	}
+
+	toCheck = [2]int{b.y, b.y}
+	if b.r != 0 {
+		toCheck[0] -= 1
+	}
+
+	if b.r != 2 {
+		toCheck[1] += 1
+	}
+	return
+}
+
+func (b *tBlock) draw(screen *ebiten.Image, x, y int) {
+	// center
+	vector.DrawFilledRect(screen, float32(x+b.x*gSquareSideSize), float32(y+b.y*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+
+	if b.r != 0 {
+		vector.DrawFilledRect(screen, float32(x+b.x*gSquareSideSize), float32(y+(b.y-1)*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+
+	if b.r != 1 {
+		vector.DrawFilledRect(screen, float32(x+(b.x+1)*gSquareSideSize), float32(y+b.y*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+
+	if b.r != 2 {
+		vector.DrawFilledRect(screen, float32(x+b.x*gSquareSideSize), float32(y+(b.y+1)*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+
+	if b.r != 3 {
+		vector.DrawFilledRect(screen, float32(x+(b.x-1)*gSquareSideSize), float32(y+b.y*gSquareSideSize), float32(gSquareSideSize), float32(gSquareSideSize), color.Gray{Y: 220}, false)
+	}
+}
 
 // Square block
 //
@@ -317,7 +511,7 @@ func (b *squareBlock) moveLeft(grid tetrisGrid) {
 
 func (b *squareBlock) moveRight(grid tetrisGrid) {
 
-	if b.x+2 >= len(grid[0]) || (b.y >= 0 && grid[b.y][b.x+2] != 0) || (b.y+1 >= 0 && grid[b.y+1][b.x+2] != 0) {
+	if b.x+2 >= len(grid[b.y]) || (b.y >= 0 && grid[b.y][b.x+2] != 0) || (b.y+1 >= 0 && grid[b.y+1][b.x+2] != 0) {
 		return
 	}
 
