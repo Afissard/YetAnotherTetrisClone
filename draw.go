@@ -35,12 +35,12 @@ func (g *game) Draw(screen *ebiten.Image) {
 	g.currentPlay.draw(screen)
 
 	// draw number of lines destroyed
-	drawNumberAt(screen, gWidth-gXLinesFromRightSide+1, gYLinesFromTop, g.currentPlay.numLines)
+	drawNumberAt(screen, gWidth-gXLinesFromRightSide+gMultFactor, gYLinesFromTop, g.currentPlay.numLines)
 
 	// draw score
-	drawNumberAt(screen, gWidth-gXScoreFromRightSide+1, gYScoreFromTop, g.score)
+	drawNumberAt(screen, gWidth-gXScoreFromRightSide+gMultFactor, gYScoreFromTop, g.score)
 
 	// draw level
-	drawNumberAt(screen, gWidth-gXLevelFromRightSide+1, gYLevelFromTop, g.level)
+	drawNumberAt(screen, gWidth-gXLevelFromRightSide+gMultFactor, gYLevelFromTop, g.level)
 
 }

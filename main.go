@@ -31,7 +31,7 @@ func main() {
 	ebiten.SetWindowTitle("Yet Another Tetris Clone")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
-	assets.Load()
+	assets.Load(gMultFactor)
 
 	if err := ebiten.RunGame(&g); err != nil {
 		panic(err)

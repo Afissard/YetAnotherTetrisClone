@@ -22,34 +22,36 @@ const (
 	gWidth  int = gPlayAreaWidth + 2*gPlayAreaSide + gInfoLeftSide + gInfoWidth + gInfoRightSide
 	gHeight int = gPlayAreaHeight
 
-	gSquareSideSize int = 8 // basic block size in pixels
+	gSquareSideSize int = 8 * gMultFactor // basic block size in pixels
 
 	gPlayAreaWidthInBlocks  int = 10
 	gPlayAreaHeightInBlocks int = 18
 
 	gPlayAreaWidth  int = gPlayAreaWidthInBlocks * gSquareSideSize  // width of play area in pixels
 	gPlayAreaHeight int = gPlayAreaHeightInBlocks * gSquareSideSize // height of play area in pixels
-	gPlayAreaSide   int = 9                                         // play area side shift in pixels
+	gPlayAreaSide   int = 9 * gMultFactor                           // play area side shift in pixels
 
-	gInfoLeftSide       int = 8  // info left side shift in pixels
-	gInfoWidth          int = 46 // info width in pixels
-	gInfoRightSide      int = 8  // info right side shift in pixels
-	gInfoBoxHeight      int = 22 // height of standard info box in pixels
-	gNextMargin         int = 5
-	gNextBoxSide        int = 42 // side of box displaying next piece in pixels
-	gInfoSmallBoxHeight int = 14 // height of small info box
-	gInfoTop            int = 6  // info top shift in pixel
-	gScoreToLevel       int = 25 // distance from score bottom to level top
-	gLevelToLines       int = 2  // distance from level bottom to lines top
-	gLinesToNext        int = 8  // distance from lines bottom to next top
-	gInfoShiftNext      int = 7  // distance from info side to next
+	gInfoLeftSide       int = 8 * gMultFactor  // info left side shift in pixels
+	gInfoWidth          int = 46 * gMultFactor // info width in pixels
+	gInfoRightSide      int = 8 * gMultFactor  // info right side shift in pixels
+	gInfoBoxHeight      int = 22 * gMultFactor // height of standard info box in pixels
+	gNextMargin         int = 5 * gMultFactor
+	gNextBoxSide        int = 42 * gMultFactor // side of box displaying next piece in pixels
+	gInfoSmallBoxHeight int = 14 * gMultFactor // height of small info box
+	gInfoTop            int = 6 * gMultFactor  // info top shift in pixel
+	gScoreToLevel       int = 25 * gMultFactor // distance from score bottom to level top
+	gLevelToLines       int = 2 * gMultFactor  // distance from level bottom to lines top
+	gLinesToNext        int = 8 * gMultFactor  // distance from lines bottom to next top
+	gInfoShiftNext      int = 7 * gMultFactor  // distance from info side to next
 
-	gXLinesFromRightSide int = 20                   // distance from right of screen to right of lines
-	gYLinesFromTop       int = 80                   // distance from top of screen to top of lines
-	gXScoreFromRightSide int = 12                   // distance from right of screen to right of score
-	gYScoreFromTop       int = 25                   // distance from top of screen to top of score
+	gXLinesFromRightSide int = 20 * gMultFactor     // distance from right of screen to right of lines
+	gYLinesFromTop       int = 80 * gMultFactor     // distance from top of screen to top of lines
+	gXScoreFromRightSide int = 12 * gMultFactor     // distance from right of screen to right of score
+	gYScoreFromTop       int = 25 * gMultFactor     // distance from top of screen to top of score
 	gXLevelFromRightSide int = gXLinesFromRightSide // distance from right of screen to right of level
-	gYLevelFromTop       int = 56                   // distance from top of screen to top of score
+	gYLevelFromTop       int = 56 * gMultFactor     // distance from top of screen to top of score
 
 	gInvisibleLines int = 3 // number of hidden lines above the grid
+
+	gMultFactor int = 4 // multiply the size of old graphics
 )

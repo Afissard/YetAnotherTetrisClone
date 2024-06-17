@@ -40,7 +40,7 @@ var ImageBack *ebiten.Image
 var imageDigitsBytes []byte
 var ImageDigits *ebiten.Image
 
-func Load() {
+func Load(mult int) {
 	var err error
 
 	imageDecoded, _, err := image.Decode(bytes.NewReader(imageSquaresBytes))
@@ -48,16 +48,35 @@ func Load() {
 		log.Fatal(err)
 	}
 	ImageSquares = ebiten.NewImageFromImage(imageDecoded)
+	// resize
+	ImageSquares = resize(ImageSquares, mult)
 
 	imageDecoded, _, err = image.Decode(bytes.NewReader(imageBackBytes))
 	if err != nil {
 		log.Fatal(err)
 	}
 	ImageBack = ebiten.NewImageFromImage(imageDecoded)
+	// resize
+	ImageBack = resize(ImageBack, mult)
 
 	imageDecoded, _, err = image.Decode(bytes.NewReader(imageDigitsBytes))
 	if err != nil {
 		log.Fatal(err)
 	}
 	ImageDigits = ebiten.NewImageFromImage(imageDecoded)
+	// resize
+	ImageDigits = resize(ImageDigits, mult)
+}
+
+func resize(img *ebiten.Image, mult int) (res *ebiten.Image) {
+
+	res = ebiten.NewImage(img.Bounds().Dx()*mult, img.Bounds().Dy()*mult)
+
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Scale(float64(mult), float64(mult))
+
+	res.DrawImage(img, &options)
+
+	return
+
 }
