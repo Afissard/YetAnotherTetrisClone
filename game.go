@@ -20,14 +20,27 @@ package main
 
 import "github.com/loig/ebitenginegamejam2024/assets"
 
+const (
+	stateTitle int = iota
+	statePlay
+	stateBalance
+)
+
 type game struct {
+	state       int
+	firstPlay   bool
 	currentPlay tetris
 	score       int
 	level       int
+	linesGoal   int
+	balance     balancing
+	choice      int
 	audio       assets.SoundManager
 }
 
 func (g *game) init() {
-	g.currentPlay.init()
 	g.audio = assets.InitAudio()
+	g.state = stateTitle
+	g.linesGoal = 10
+	g.firstPlay = true
 }

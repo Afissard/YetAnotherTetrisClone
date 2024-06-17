@@ -45,6 +45,7 @@ type tetris struct {
 	manualMoveAllowed     bool
 	numLines              int
 	dropLenght            int
+	deathLines            int
 	// animation and lines removal handling
 	toCheck                          [2]int
 	toRemove                         [4]bool
@@ -55,13 +56,15 @@ type tetris struct {
 	removeLineAnimationStepNumFrames int
 }
 
-func (t *tetris) init() {
-	t.area = tetrisGrid{}
-	t.currentBlock = getNewBlock()
-	t.currentBlock.setInitialPosition()
-	t.nextBlock = getNewBlock()
+func (t *tetris) init(level int, balance balancing) {
+	if level == 0 {
+		t.area = tetrisGrid{}
+		t.currentBlock = getNewBlock()
+		t.currentBlock.setInitialPosition()
+		t.nextBlock = getNewBlock()
+	}
 	t.autoDownFrame = 0
-	t.autoDownFrameLimit = 40
+	t.autoDownFrameLimit = balance.getSpeed()
 	t.manualDownFrame = 0
 	t.manualDownFrameLimit = 4
 	t.lrMoveFrame = 0
@@ -71,6 +74,7 @@ func (t *tetris) init() {
 	t.manualMoveAllowed = true
 	t.numLines = 0
 	t.dropLenght = 0
+	t.deathLines = balance.getDeathLines()
 	t.toCheck = [2]int{}
 	t.toRemove = [4]bool{}
 	t.toRemoveNum = 0
@@ -79,19 +83,19 @@ func (t *tetris) init() {
 	t.removeLineAnimationStepNumFrames = 8
 }
 
-func (t *tetris) setUpNext() {
-	if t.lost() {
-		t.init()
-	}
+func (t *tetris) setUpNext() (dead bool) {
+	dead = t.lost()
 
 	t.currentBlock = t.nextBlock
 	t.currentBlock.setInitialPosition()
 	t.nextBlock = getNewBlock()
 
 	t.manualMoveAllowed = false
+
+	return
 }
 
-func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool, level int) (scoreIncrease int, playSounds [assets.NumSounds]bool) {
+func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool, level int) (dead bool, scoreIncrease int, playSounds [assets.NumSounds]bool) {
 
 	if t.removeLineAnimationStep > 0 {
 
@@ -127,7 +131,7 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 		t.toRemoveNum = 0
 		t.toCheck = [2]int{}
 
-		t.setUpNext()
+		dead = t.setUpNext()
 
 		return
 	}
@@ -222,7 +226,7 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 			return
 		}
 
-		t.setUpNext()
+		dead = t.setUpNext()
 	}
 
 	return
@@ -284,7 +288,7 @@ func (t *tetris) removeLines() {
 // check if their is anything in the above area
 // which would mean that the game is lost
 func (t tetris) lost() bool {
-	for _, line := range t.area[:gInvisibleLines+1] {
+	for _, line := range t.area[:gInvisibleLines+t.deathLines] {
 		for _, v := range line {
 			if v != 0 {
 				return true

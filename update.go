@@ -21,11 +21,48 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/loig/ebitenginegamejam2024/assets"
 )
 
 func (g *game) Update() (err error) {
 
-	score, sounds := g.currentPlay.update(
+	g.audio.NextSounds = [assets.NumSounds]bool{}
+
+	switch g.state {
+	case stateTitle:
+		if g.updateStateTitle() {
+			g.state++
+			g.balance = newBalance()
+			g.currentPlay.init(g.level, g.balance)
+		}
+	case statePlay:
+		if g.updateStatePlay() {
+			g.state = stateTitle
+			g.firstPlay = false
+			g.level = 0
+		}
+		if g.currentPlay.numLines >= g.balance.getGoalLines() {
+			g.state++
+			g.level++
+			g.balance.getChoice()
+		}
+	case stateBalance:
+		if g.updateStateBalance() {
+			g.state = statePlay
+			g.currentPlay.init(g.level, g.balance)
+		}
+	}
+
+	return nil
+}
+
+func (g *game) updateStateTitle() (end bool) {
+	end = inpututil.IsKeyJustPressed(ebiten.KeyEnter)
+	return
+}
+
+func (g *game) updateStatePlay() bool {
+	dead, score, sounds := g.currentPlay.update(
 		ebiten.IsKeyPressed(ebiten.KeyDown),
 		ebiten.IsKeyPressed(ebiten.KeyLeft),
 		ebiten.IsKeyPressed(ebiten.KeyRight),
@@ -37,5 +74,24 @@ func (g *game) Update() (err error) {
 	g.score += score
 	g.audio.NextSounds = sounds
 
-	return nil
+	return dead
+}
+
+func (g *game) updateStateBalance() (end bool) {
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+		g.choice = (g.choice + g.balance.numChoices - 1) % g.balance.numChoices
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+		g.choice = (g.choice + 1) % g.balance.numChoices
+	}
+
+	end = inpututil.IsKeyJustPressed(ebiten.KeyEnter)
+
+	if end {
+		g.balance.setChoice(g.choice)
+	}
+
+	return
 }
