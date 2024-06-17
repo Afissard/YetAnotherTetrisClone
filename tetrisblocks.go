@@ -28,6 +28,7 @@ const (
 	sBlockStyle
 	tBlockStyle
 	zBlockStyle
+	breakStyle
 )
 
 func getIBlock() tetrisBlock {
