@@ -25,7 +25,7 @@ import (
 
 func (g *game) Update() (err error) {
 
-	g.score += g.currentPlay.update(
+	score, sounds := g.currentPlay.update(
 		ebiten.IsKeyPressed(ebiten.KeyDown),
 		ebiten.IsKeyPressed(ebiten.KeyLeft),
 		ebiten.IsKeyPressed(ebiten.KeyRight),
@@ -33,6 +33,9 @@ func (g *game) Update() (err error) {
 		inpututil.IsKeyJustPressed(ebiten.KeyEnter),
 		g.level,
 	)
+
+	g.score += score
+	g.audio.NextSounds = sounds
 
 	return nil
 }

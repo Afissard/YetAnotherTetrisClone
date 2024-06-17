@@ -67,28 +67,32 @@ func (t *tetrisBlock) moveDown(grid tetrisGrid) (stuck bool) {
 	return
 }
 
-func (t *tetrisBlock) moveLeft(grid tetrisGrid) {
+func (t *tetrisBlock) moveLeft(grid tetrisGrid) bool {
 	t.x--
 	if !t.isInValidPosition(grid) {
 		t.x++
+		return false
 	}
+	return true
 }
 
-func (t *tetrisBlock) moveRight(grid tetrisGrid) {
+func (t *tetrisBlock) moveRight(grid tetrisGrid) bool {
 	t.x++
 	if !t.isInValidPosition(grid) {
 		t.x--
+		return false
 	}
+	return true
 }
 
-func (b *tetrisBlock) updatePosition(rlMove int, dMove bool, grid tetrisGrid) (stuck bool) {
+func (b *tetrisBlock) updatePosition(rlMove int, dMove bool, grid tetrisGrid) (stuck bool, lrMoved bool) {
 
 	if rlMove < 0 {
-		b.moveLeft(grid)
+		lrMoved = b.moveLeft(grid)
 	}
 
 	if rlMove > 0 {
-		b.moveRight(grid)
+		lrMoved = b.moveRight(grid)
 	}
 
 	// try to move down or detect that the block is stuck
@@ -99,18 +103,22 @@ func (b *tetrisBlock) updatePosition(rlMove int, dMove bool, grid tetrisGrid) (s
 	return
 }
 
-func (t *tetrisBlock) rotateLeft(grid tetrisGrid) {
+func (t *tetrisBlock) rotateLeft(grid tetrisGrid) bool {
 	t.r = (t.r + 3) % 4
 	if !t.isInValidPosition(grid) {
 		t.r = (t.r + 1) % 4
+		return false
 	}
+	return true
 }
 
-func (t *tetrisBlock) rotateRight(grid tetrisGrid) {
+func (t *tetrisBlock) rotateRight(grid tetrisGrid) bool {
 	t.r = (t.r + 1) % 4
 	if !t.isInValidPosition(grid) {
 		t.r = (t.r + 3) % 4
+		return false
 	}
+	return true
 }
 
 func (t tetrisBlock) writeInGrid(grid *tetrisGrid) (toCheck [2]int) {

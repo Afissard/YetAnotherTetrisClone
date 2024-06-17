@@ -43,4 +43,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 	// draw level
 	drawNumberAt(screen, gWidth-gXLevelFromRightSide+gMultFactor, gYLevelFromTop, g.level)
 
+	// play sounds
+	g.audio.PlaySounds()
+
 }

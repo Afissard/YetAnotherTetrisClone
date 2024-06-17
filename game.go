@@ -18,12 +18,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
+import "github.com/loig/ebitenginegamejam2024/assets"
+
 type game struct {
 	currentPlay tetris
 	score       int
 	level       int
+	audio       assets.SoundManager
 }
 
 func (g *game) init() {
 	g.currentPlay.init()
+	g.audio = assets.InitAudio()
 }

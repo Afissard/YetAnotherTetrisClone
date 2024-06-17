@@ -76,7 +76,7 @@ func (t *tetris) init() {
 	t.toRemoveNum = 0
 	t.removeLineAnimationFrame = 0
 	t.removeLineAnimationStep = 0
-	t.removeLineAnimationStepNumFrames = 12
+	t.removeLineAnimationStepNumFrames = 8
 }
 
 func (t *tetris) setUpNext() {
@@ -91,7 +91,7 @@ func (t *tetris) setUpNext() {
 	t.manualMoveAllowed = false
 }
 
-func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool, level int) (scoreIncrease int) {
+func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool, level int) (scoreIncrease int, playSounds [assets.NumSounds]bool) {
 
 	if t.removeLineAnimationStep > 0 {
 
@@ -108,6 +108,7 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 		t.removeLineAnimationStep = 0
 
 		// lines removal animation and effects
+		playSounds[assets.SoundLinesFallingID] = true
 		t.removeLines()
 
 		switch t.toRemoveNum {
@@ -131,12 +132,12 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 		return
 	}
 
-	if rotateLeft {
-		t.currentBlock.rotateLeft(t.area)
+	if rotateLeft && !rotateRight {
+		playSounds[assets.SoundRotationID] = t.currentBlock.rotateLeft(t.area)
 	}
 
-	if rotateRight {
-		t.currentBlock.rotateRight(t.area)
+	if rotateRight && !rotateLeft {
+		playSounds[assets.SoundRotationID] = t.currentBlock.rotateRight(t.area)
 	}
 
 	mayAllowManualMoves := false
@@ -204,7 +205,10 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 	}
 
 	// update position according to movements requests
-	if t.currentBlock.updatePosition(xMove, autoDown || manualDown, t.area) {
+	var stuck bool
+	stuck, playSounds[assets.SoundLeftRightID] = t.currentBlock.updatePosition(xMove, autoDown || manualDown, t.area)
+	if stuck {
+		playSounds[assets.SoundTouchGroundID] = true
 
 		t.toCheck = t.currentBlock.writeInGrid(&t.area)
 
@@ -214,6 +218,7 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 
 		if t.toRemoveNum > 0 {
 			t.removeLineAnimationStep = 1
+			playSounds[assets.SoundLinesVanishingID] = true
 			return
 		}
 
@@ -273,8 +278,6 @@ func (t *tetris) removeLines() {
 			t.area[y] = tetrisLine{}
 		}
 	}
-
-	return
 
 }
 
