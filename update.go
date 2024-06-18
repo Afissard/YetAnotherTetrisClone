@@ -32,7 +32,7 @@ func (g *game) Update() (err error) {
 	case stateTitle:
 		if g.updateStateTitle() {
 			g.state++
-			g.balance = newBalance()
+			g.balance = newBalance(g.numChoices)
 			g.currentPlay.init(g.level, g.balance)
 		}
 	case statePlay:
@@ -47,7 +47,7 @@ func (g *game) Update() (err error) {
 			g.balance.getChoice()
 		}
 	case stateBalance:
-		if g.updateStateBalance() {
+		if g.balance.update() {
 			g.state = statePlay
 			g.currentPlay.init(g.level, g.balance)
 		}
@@ -75,23 +75,4 @@ func (g *game) updateStatePlay() bool {
 	g.audio.NextSounds = sounds
 
 	return dead
-}
-
-func (g *game) updateStateBalance() (end bool) {
-
-	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
-		g.choice = (g.choice + g.balance.numChoices - 1) % g.balance.numChoices
-	}
-
-	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
-		g.choice = (g.choice + 1) % g.balance.numChoices
-	}
-
-	end = inpututil.IsKeyJustPressed(ebiten.KeyEnter)
-
-	if end {
-		g.balance.setChoice(g.choice)
-	}
-
-	return
 }

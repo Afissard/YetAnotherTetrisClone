@@ -20,15 +20,18 @@ package main
 
 import (
 	"image"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/loig/ebitenginegamejam2024/assets"
 )
 
 // draw a number right alligned in a rectangle which top right is given by (x, y) in pixels
-func drawNumberAt(screen *ebiten.Image, x, y int, num int) {
+func drawNumberAt(screen *ebiten.Image, gray uint8, x, y int, num int) {
 
 	options := ebiten.DrawImageOptions{}
+
+	options.ColorScale.ScaleWithColor(color.Gray{gray})
 
 	options.GeoM.Translate(float64(x), float64(y))
 

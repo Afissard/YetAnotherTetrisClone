@@ -30,26 +30,34 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 	switch g.state {
 	case statePlay:
-		// draw background
-		options := ebiten.DrawImageOptions{}
-		screen.DrawImage(assets.ImageBack, &options)
-		// draw current play
-		g.currentPlay.draw(screen)
-		// draw number of lines destroyed
-		drawNumberAt(screen, gWidth-gXLinesFromRightSide+gMultFactor, gYLinesFromTop, g.currentPlay.numLines)
-		// draw score
-		drawNumberAt(screen, gWidth-gXScoreFromRightSide+gMultFactor, gYScoreFromTop, g.score)
-		// draw level
-		drawNumberAt(screen, gWidth-gXLevelFromRightSide+gMultFactor, gYLevelFromTop, g.level)
-		// hide lines
-		vector.DrawFilledRect(screen, float32(gPlayAreaSide), float32(gPlayAreaHeight), float32(gPlayAreaWidth), -float32(g.balance.getHiddenLines()*gSquareSideSize), color.Black, false)
-		// death lines
-		if !g.firstPlay || g.level > 0 {
-			vector.StrokeRect(screen, float32(gPlayAreaSide), 0, float32(gPlayAreaWidth), float32(g.currentPlay.deathLines*gSquareSideSize), 2, color.Black, false)
-		}
+		g.drawPlay(screen, 255)
+	case stateBalance:
+		g.drawPlay(screen, 100)
+		g.balance.draw(screen)
 	}
 
 	// play sounds
 	g.audio.PlaySounds()
 
+}
+
+func (g game) drawPlay(screen *ebiten.Image, gray uint8) {
+	// draw background
+	options := ebiten.DrawImageOptions{}
+	options.ColorScale.ScaleWithColor(color.Gray{gray})
+	screen.DrawImage(assets.ImageBack, &options)
+	// draw current play
+	g.currentPlay.draw(screen, gray)
+	// draw number of lines destroyed
+	drawNumberAt(screen, gray, gWidth-gXLinesFromRightSide+gMultFactor, gYLinesFromTop, g.currentPlay.numLines)
+	// draw score
+	drawNumberAt(screen, gray, gWidth-gXScoreFromRightSide+gMultFactor, gYScoreFromTop, g.score)
+	// draw level
+	drawNumberAt(screen, gray, gWidth-gXLevelFromRightSide+gMultFactor, gYLevelFromTop, g.level)
+	// hide lines
+	vector.DrawFilledRect(screen, float32(gPlayAreaSide), float32(gPlayAreaHeight), float32(gPlayAreaWidth), -float32(g.balance.getHiddenLines()*gSquareSideSize), color.Black, false)
+	// death lines
+	if !g.firstPlay || g.level > 0 {
+		vector.StrokeRect(screen, float32(gPlayAreaSide), 0, float32(gPlayAreaWidth), float32(g.currentPlay.deathLines*gSquareSideSize), 2, color.Black, false)
+	}
 }

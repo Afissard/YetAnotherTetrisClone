@@ -20,6 +20,7 @@ package main
 
 import (
 	"image"
+	"image/color"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -321,18 +322,18 @@ func getNewBlock() (block tetrisBlock) {
 
 }
 
-func (t tetris) draw(screen *ebiten.Image) {
+func (t tetris) draw(screen *ebiten.Image, gray uint8) {
 
 	xNextOrigin := gPlayAreaSide + gPlayAreaWidth + gPlayAreaSide + gInfoLeftSide + gInfoShiftNext + gNextMargin
 	yNextOrigin := gInfoTop + gInfoSmallBoxHeight + gScoreToLevel + gInfoBoxHeight + gLevelToLines + gInfoBoxHeight + gLinesToNext + gNextMargin
 
-	t.nextBlock.draw(screen, xNextOrigin, yNextOrigin)
+	t.nextBlock.draw(screen, gray, xNextOrigin, yNextOrigin)
 
 	xOrigin := gPlayAreaSide
 	yOrigin := gSquareSideSize * -gInvisibleLines
 
 	if t.removeLineAnimationStep == 0 {
-		t.currentBlock.draw(screen, xOrigin, yOrigin)
+		t.currentBlock.draw(screen, gray, xOrigin, yOrigin)
 	}
 
 	for y, line := range t.area {
@@ -351,6 +352,7 @@ func (t tetris) draw(screen *ebiten.Image) {
 				}
 
 				options := ebiten.DrawImageOptions{}
+				options.ColorScale.ScaleWithColor(color.Gray{gray})
 				options.GeoM.Translate(float64(xOrigin+x*gSquareSideSize), float64(yOrigin+y*gSquareSideSize))
 				screen.DrawImage(assets.ImageSquares.SubImage(image.Rect((style-1)*gSquareSideSize, 0, style*gSquareSideSize, gSquareSideSize)).(*ebiten.Image), &options)
 			}

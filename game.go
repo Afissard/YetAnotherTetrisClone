@@ -34,7 +34,7 @@ type game struct {
 	level       int
 	linesGoal   int
 	balance     balancing
-	choice      int
+	numChoices  int
 	audio       assets.SoundManager
 }
 
@@ -43,4 +43,5 @@ func (g *game) init() {
 	g.state = stateTitle
 	g.linesGoal = 10
 	g.firstPlay = true
+	g.numChoices = 3
 }

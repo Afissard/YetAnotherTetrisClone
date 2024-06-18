@@ -54,4 +54,8 @@ const (
 	gInvisibleLines int = 3 // number of hidden lines above the grid
 
 	gMultFactor int = 4 // multiply the size of old graphics
+
+	gChoiceSize int = 120 // size in pixels of the side of a balancing choice
+
+	gChoiceSelectionNumFrame int = 30 // number of frames for changing balancing choice
 )

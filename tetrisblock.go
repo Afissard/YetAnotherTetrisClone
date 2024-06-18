@@ -20,6 +20,7 @@ package main
 
 import (
 	"image"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/loig/ebitenginegamejam2024/assets"
@@ -146,7 +147,7 @@ func (t tetrisBlock) writeInGrid(grid *tetrisGrid) (toCheck [2]int) {
 }
 
 // xFrom, yFrom in pixels
-func (t tetrisBlock) draw(screen *ebiten.Image, xFrom, yFrom int) {
+func (t tetrisBlock) draw(screen *ebiten.Image, gray uint8, xFrom, yFrom int) {
 
 	for yRel, line := range t.states[t.r] {
 		yAbs := t.y + yRel
@@ -155,6 +156,7 @@ func (t tetrisBlock) draw(screen *ebiten.Image, xFrom, yFrom int) {
 				xAbs := t.x + xRel
 
 				options := ebiten.DrawImageOptions{}
+				options.ColorScale.ScaleWithColor(color.Gray{gray})
 				options.GeoM.Translate(float64(xFrom+xAbs*gSquareSideSize), float64(yFrom+yAbs*gSquareSideSize))
 				screen.DrawImage(assets.ImageSquares.SubImage(image.Rect((t.style-1)*gSquareSideSize, 0, t.style*gSquareSideSize, gSquareSideSize)).(*ebiten.Image), &options)
 			}

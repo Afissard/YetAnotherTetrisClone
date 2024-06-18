@@ -19,13 +19,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 import (
+	"image"
+	"math"
 	"math/rand"
-)
 
-const (
-	leftChoice int = iota
-	rigthChoice
-	numChoices
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/loig/ebitenginegamejam2024/assets"
 )
 
 const (
@@ -44,16 +44,98 @@ const (
 )
 
 type balancing struct {
-	levels     [numBalances]int
-	maxLevels  [numBalances]int
-	choices    [numChoices]int
-	numChoices int
+	levels          [numBalances]int
+	maxLevels       [numBalances]int
+	choice          int
+	choiceDirection int
+	choices         []int
+	numChoices      int
+	inTransition    bool
+	transitionFrame int
 }
 
-func newBalance() balancing {
+func (b *balancing) update() (end bool) {
+
+	if b.inTransition {
+		b.transitionFrame++
+		if b.transitionFrame >= gChoiceSelectionNumFrame {
+			b.inTransition = false
+			b.transitionFrame = 0
+			if b.choiceDirection < 0 {
+				b.choice = (b.choice + 1) % b.numChoices
+			} else {
+				b.choice = (b.choice + b.numChoices - 1) % b.numChoices
+			}
+		}
+		return
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+		b.choiceDirection = 1
+		b.inTransition = true
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+		b.choiceDirection = -1
+		b.inTransition = true
+	}
+
+	end = inpututil.IsKeyJustPressed(ebiten.KeyEnter)
+
+	if end {
+		b.setChoice(b.choices[b.choice])
+	}
+
+	return
+}
+
+func (b balancing) draw(screen *ebiten.Image) {
+
+	r := float64(gHeight / 5)
+	cX, cY := gWidth/2, 2*gHeight/3
+
+	angleShift := float64(b.choiceDirection) * float64(b.transitionFrame) / float64(gChoiceSelectionNumFrame) * (math.Pi * 2) / float64(b.numChoices)
+	if !b.inTransition {
+		angleShift = 0
+	}
+
+	currentX, currentY := math.Cos(math.Pi/2+angleShift)*r, -math.Sin(math.Pi/2+angleShift)*r
+	currentX += float64(cX - gChoiceSize/2)
+	currentY += float64(cY - gChoiceSize/2)
+
+	// current choice
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Translate(currentX, currentY)
+	if !b.inTransition {
+		screen.DrawImage(assets.ImageMalus.SubImage(image.Rect(numBalances*gChoiceSize, 0, (numBalances+1)*gChoiceSize, gChoiceSize)).(*ebiten.Image), &options)
+	}
+	screen.DrawImage(assets.ImageMalus.SubImage(image.Rect(b.choices[b.choice]*gChoiceSize, 0, (b.choices[b.choice]+1)*gChoiceSize, gChoiceSize)).(*ebiten.Image), &options)
+
+	// other choices
+	for i := 0; i < b.numChoices-1; i++ {
+		// find the choice to display
+		displayNum := (b.choice + i + 1) % b.numChoices
+		theChoice := b.choices[displayNum]
+
+		//find the position to display it
+		angle := float64(i+1)*(math.Pi*2)/float64(b.numChoices) + math.Pi/2 + angleShift
+		x, y := math.Cos(angle)*r, -math.Sin(angle)*r
+		x += float64(cX - gChoiceSize/2)
+		y += float64(cY - gChoiceSize/2)
+
+		options := ebiten.DrawImageOptions{}
+		options.GeoM.Translate(x, y)
+		screen.DrawImage(assets.ImageMalus.SubImage(image.Rect(theChoice*gChoiceSize, 0, (theChoice+1)*gChoiceSize, gChoiceSize)).(*ebiten.Image), &options)
+	}
+
+}
+
+func newBalance(numChoices int) balancing {
 
 	b := balancing{}
-	for i := 0; i < numChoices; i++ {
+
+	b.choices = make([]int, numChoices)
+	for i := range b.choices {
 		b.choices[i] = -1
 	}
 
@@ -112,8 +194,8 @@ BalanceLoop:
 
 }
 
-func (b *balancing) setChoice(choicePosition int) {
-	b.levels[b.choices[choicePosition]]++
+func (b *balancing) setChoice(choice int) {
+	b.levels[choice]++
 }
 
 func (b balancing) getDeathLines() (numLines int) {
