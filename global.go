@@ -59,4 +59,11 @@ const (
 	gChoiceLevelSize int = 16  // size in pixels of the icone giving the level of a balancing choice
 
 	gChoiceSelectionNumFrame int = 30 // number of frames for changing balancing choice
+
+	gSpeedLevels int = 21
 )
+
+var gSpeeds [gSpeedLevels]int = [gSpeedLevels]int{
+	53, 49, 45, 41, 37, 33, 28, 22, 17, 11, 10,
+	9, 8, 7, 6, 6, 5, 5, 4, 4, 3,
+}

@@ -29,6 +29,10 @@ import (
 // draw a number right alligned in a rectangle which top right is given by (x, y) in pixels
 func drawNumberAt(screen *ebiten.Image, gray uint8, x, y int, num int) {
 
+	if num < 0 {
+		num = 0
+	}
+
 	options := ebiten.DrawImageOptions{}
 
 	options.ColorScale.ScaleWithColor(color.Gray{gray})

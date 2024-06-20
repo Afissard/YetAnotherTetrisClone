@@ -32,7 +32,6 @@ type game struct {
 	currentPlay tetris
 	score       int
 	level       int
-	linesGoal   int
 	balance     balancing
 	numChoices  int
 	audio       assets.SoundManager
@@ -41,7 +40,6 @@ type game struct {
 func (g *game) init() {
 	g.audio = assets.InitAudio()
 	g.state = stateTitle
-	g.linesGoal = 10
 	g.firstPlay = true
 	g.numChoices = 3
 }

@@ -57,7 +57,7 @@ type tetris struct {
 	removeLineAnimationStepNumFrames int
 }
 
-func (t *tetris) init(level int, balance balancing) {
+func (t *tetris) init(level int, balance balancing, speedLevel int) {
 	if level == 0 {
 		t.area = tetrisGrid{}
 		t.currentBlock = getNewBlock()
@@ -65,7 +65,7 @@ func (t *tetris) init(level int, balance balancing) {
 		t.nextBlock = getNewBlock()
 	}
 	t.autoDownFrame = 0
-	t.autoDownFrameLimit = balance.getSpeed()
+	t.autoDownFrameLimit = gSpeeds[balance.getSpeedLevel(speedLevel)]
 	t.manualDownFrame = 0
 	t.manualDownFrameLimit = 4
 	t.lrMoveFrame = 0

@@ -37,10 +37,10 @@ const (
 )
 
 const (
-	maxLevelGoalLines   = 2
-	maxLevelSpeed       = 4
-	maxLevelHiddenLines = 9
-	maxLevelDeathLines  = 8
+	maxLevelGoalLines   = 3
+	maxLevelSpeed       = 5
+	maxLevelHiddenLines = 5
+	maxLevelDeathLines  = 5
 )
 
 type balancing struct {
@@ -234,9 +234,9 @@ func (b *balancing) setChoice(choice int) {
 }
 
 func (b balancing) getDeathLines() (numLines int) {
-	const maxDeathLines int = gPlayAreaHeightInBlocks / 2
+	const maxDeathLines int = 2*gPlayAreaHeightInBlocks/3 - 1
 
-	numLines = b.levels[balanceDeathLines] + 1
+	numLines = b.levels[balanceDeathLines] + 2
 	if numLines > maxDeathLines {
 		numLines = maxDeathLines
 	}
@@ -244,11 +244,12 @@ func (b balancing) getDeathLines() (numLines int) {
 }
 
 func (b balancing) getHiddenLines() (numLines int) {
-	const hiddenFactor int = 2
+	const hiddenFactor int = 3
+	const maxHiddenLines int = 15
 
 	numLines = hiddenFactor * b.levels[balanceHiddenLines]
-	if numLines > gPlayAreaHeightInBlocks {
-		numLines = gPlayAreaHeightInBlocks
+	if numLines > maxHiddenLines {
+		numLines = maxHiddenLines
 	}
 
 	return
@@ -256,7 +257,7 @@ func (b balancing) getHiddenLines() (numLines int) {
 
 func (b balancing) getGoalLines() int {
 	var goalLines [maxLevelGoalLines + 1]int = [maxLevelGoalLines + 1]int{
-		1, 15, 20,
+		10, 15, 20, 30,
 	}
 
 	if b.levels[balanceGoalLines] < len(goalLines) {
@@ -265,13 +266,16 @@ func (b balancing) getGoalLines() int {
 	return goalLines[len(goalLines)-1]
 }
 
-func (b balancing) getSpeed() int {
-	var speedLevels [maxLevelSpeed + 1]int = [maxLevelSpeed + 1]int{
-		45, 30, 20, 10, 5,
+func (b balancing) getSpeedLevel(baseSpeedLevel int) int {
+	var speedLevels [maxLevelSpeed]int = [maxLevelSpeed]int{
+		1, 2, 4, 7, 10,
 	}
 
-	if b.levels[balanceSpeed] < len(speedLevels) {
-		return speedLevels[b.levels[balanceSpeed]]
+	id := b.levels[balanceSpeed]
+	if id >= len(speedLevels) {
+		id = len(speedLevels) - 1
 	}
-	return speedLevels[len(speedLevels)-1]
+	baseSpeedLevel += speedLevels[id]
+
+	return baseSpeedLevel
 }
