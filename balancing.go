@@ -89,6 +89,40 @@ func (b *balancing) update() (end bool) {
 	return
 }
 
+func drawLevel(screen *ebiten.Image, level, levelMax int, x, y float64) {
+
+	space := 0.2
+	dx := float64(gChoiceLevelSize) * (space + 1)
+
+	steps := levelMax / 2
+	if levelMax <= 3 {
+		steps = levelMax
+	}
+	centerShift := (float64(gChoiceSize) - float64(steps)*dx - space) / 2
+	yShift := float64(gChoiceSize) - 2*dx
+
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Translate(x-dx+centerShift, y+yShift)
+
+	for i := 0; i < levelMax; i++ {
+		if i == levelMax/2 && levelMax > 3 {
+			// secondLine
+			shiftAdjust := -float64(gChoiceLevelSize) * 0.6
+			if levelMax%2 == 0 {
+				shiftAdjust = 0
+			}
+
+			options.GeoM.Translate(-dx*float64(levelMax/2)+shiftAdjust, float64(gChoiceLevelSize)*1.2)
+		}
+		options.GeoM.Translate(dx, 0)
+		shift := 0
+		if i > level {
+			shift = 1
+		}
+		screen.DrawImage(assets.ImageLevel.SubImage(image.Rect(shift*gChoiceLevelSize, 0, (shift+1)*gChoiceLevelSize, gChoiceLevelSize)).(*ebiten.Image), &options)
+	}
+}
+
 func (b balancing) draw(screen *ebiten.Image) {
 
 	r := float64(gHeight / 5)
@@ -110,6 +144,7 @@ func (b balancing) draw(screen *ebiten.Image) {
 		screen.DrawImage(assets.ImageMalus.SubImage(image.Rect(numBalances*gChoiceSize, 0, (numBalances+1)*gChoiceSize, gChoiceSize)).(*ebiten.Image), &options)
 	}
 	screen.DrawImage(assets.ImageMalus.SubImage(image.Rect(b.choices[b.choice]*gChoiceSize, 0, (b.choices[b.choice]+1)*gChoiceSize, gChoiceSize)).(*ebiten.Image), &options)
+	drawLevel(screen, b.levels[b.choices[b.choice]], b.maxLevels[b.choices[b.choice]], currentX, currentY)
 
 	// other choices
 	for i := 0; i < b.numChoices-1; i++ {

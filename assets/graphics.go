@@ -44,6 +44,10 @@ var ImageDigits *ebiten.Image
 var imageMalusBytes []byte
 var ImageMalus *ebiten.Image
 
+//go:embed level.png
+var imageLevelBytes []byte
+var ImageLevel *ebiten.Image
+
 func Load(mult int) {
 	var err error
 
@@ -76,6 +80,12 @@ func Load(mult int) {
 		log.Fatal(err)
 	}
 	ImageMalus = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageLevelBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageLevel = ebiten.NewImageFromImage(imageDecoded)
 }
 
 func resize(img *ebiten.Image, mult int) (res *ebiten.Image) {

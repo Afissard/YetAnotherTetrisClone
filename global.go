@@ -55,7 +55,8 @@ const (
 
 	gMultFactor int = 4 // multiply the size of old graphics
 
-	gChoiceSize int = 120 // size in pixels of the side of a balancing choice
+	gChoiceSize      int = 120 // size in pixels of the side of a balancing choice
+	gChoiceLevelSize int = 16  // size in pixels of the icone giving the level of a balancing choice
 
 	gChoiceSelectionNumFrame int = 30 // number of frames for changing balancing choice
 )
