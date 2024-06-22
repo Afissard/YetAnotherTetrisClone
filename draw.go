@@ -34,6 +34,9 @@ func (g *game) Draw(screen *ebiten.Image) {
 	case stateBalance:
 		g.drawPlay(screen, 100)
 		g.balance.draw(screen)
+	case stateLost:
+		g.drawPlay(screen, 100)
+		g.money.draw(screen)
 	}
 
 	// play sounds
@@ -51,7 +54,7 @@ func (g game) drawPlay(screen *ebiten.Image, gray uint8) {
 	// draw number of lines destroyed
 	drawNumberAt(screen, gray, gWidth-gXLinesFromRightSide+gMultFactor, gYLinesFromTop, g.balance.getGoalLines()-g.currentPlay.numLines)
 	// draw score
-	drawNumberAt(screen, gray, gWidth-gXScoreFromRightSide+gMultFactor, gYScoreFromTop, g.score)
+	drawNumberAt(screen, gray, gWidth-gXScoreFromRightSide+gMultFactor, gYScoreFromTop, g.currentPlay.score)
 	// draw level
 	drawNumberAt(screen, gray, gWidth-gXLevelFromRightSide+gMultFactor, gYLevelFromTop, g.level)
 	// hide lines

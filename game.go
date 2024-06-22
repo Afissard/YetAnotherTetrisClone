@@ -24,17 +24,19 @@ const (
 	stateTitle int = iota
 	statePlay
 	stateBalance
+	stateLost
+	stateImprove
 )
 
 type game struct {
 	state       int
 	firstPlay   bool
 	currentPlay tetris
-	score       int
 	level       int
 	balance     balancing
 	numChoices  int
 	audio       assets.SoundManager
+	money       moneyHandler
 }
 
 func (g *game) init() {

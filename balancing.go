@@ -258,7 +258,7 @@ func (b balancing) getHiddenLines() (numLines int) {
 
 func (b balancing) getGoalLines() int {
 	var goalLines [maxLevelGoalLines + 1]int = [maxLevelGoalLines + 1]int{
-		1, 15, 20, 30,
+		10, 15, 20, 30,
 	}
 
 	if b.levels[balanceGoalLines] < len(goalLines) {

@@ -63,6 +63,8 @@ const (
 	gSpeedLevels int = 21
 
 	gInvisibleNumFrames int = 60 // num frames for one step of invisibility
+
+	gCoinSideSize int = 32 // size of the side of the coin image in pixels
 )
 
 var gSpeeds [gSpeedLevels]int = [gSpeedLevels]int{

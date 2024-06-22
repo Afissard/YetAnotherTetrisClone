@@ -31,26 +31,32 @@ func (g *game) Update() (err error) {
 	switch g.state {
 	case stateTitle:
 		if g.updateStateTitle() {
-			g.state++
+			g.state = statePlay
 			g.balance = newBalance(g.numChoices)
-			g.currentPlay.init(g.level, g.balance, g.level)
+			g.currentPlay.init(g.level, g.balance, g.level, 0)
 		}
 	case statePlay:
 		if g.updateStatePlay() {
-			g.state = stateTitle
-			g.firstPlay = false
-			g.level = 0
+			g.state = stateLost
+			g.money.addScore(g.currentPlay.score)
 		}
 		if g.currentPlay.numLines >= g.balance.getGoalLines() {
-			g.state++
+			g.state = stateBalance
 			g.level++
 			g.balance.getChoice()
 		}
 	case stateBalance:
 		if g.balance.update() {
 			g.state = statePlay
-			g.currentPlay.init(g.level, g.balance, g.level)
+			g.currentPlay.init(g.level, g.balance, g.level, g.currentPlay.score)
 		}
+	case stateLost:
+		if g.money.update() {
+			g.state = stateTitle
+			g.firstPlay = false
+			g.level = 0
+		}
+		g.currentPlay.score = g.money.score
 	}
 
 	return nil
@@ -62,7 +68,7 @@ func (g *game) updateStateTitle() (end bool) {
 }
 
 func (g *game) updateStatePlay() bool {
-	dead, score, sounds := g.currentPlay.update(
+	dead, sounds := g.currentPlay.update(
 		ebiten.IsKeyPressed(ebiten.KeyDown),
 		ebiten.IsKeyPressed(ebiten.KeyLeft),
 		ebiten.IsKeyPressed(ebiten.KeyRight),
@@ -71,7 +77,6 @@ func (g *game) updateStatePlay() bool {
 		g.level,
 	)
 
-	g.score += score
 	g.audio.NextSounds = sounds
 
 	return dead

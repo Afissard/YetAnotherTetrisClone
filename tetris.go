@@ -59,9 +59,11 @@ type tetris struct {
 	invisibleLevel int
 	invisibleStep  int
 	invisibleFrame int
+	// count score
+	score int
 }
 
-func (t *tetris) init(level int, balance balancing, speedLevel int) {
+func (t *tetris) init(level int, balance balancing, speedLevel int, score int) {
 	if level == 0 {
 		t.area = tetrisGrid{}
 		t.currentBlock = getNewBlock(tetrisBlock{id: -1}, tetrisBlock{id: -1})
@@ -89,6 +91,7 @@ func (t *tetris) init(level int, balance balancing, speedLevel int) {
 	t.invisibleFrame = 0
 	t.invisibleStep = maxLevelInvisibleBlocks
 	t.invisibleLevel = balance.getInvisibleBlocks()
+	t.score = score
 }
 
 func (t *tetris) setUpNext() (dead bool) {
@@ -107,7 +110,7 @@ func (t *tetris) setUpNext() (dead bool) {
 	return
 }
 
-func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool, level int) (dead bool, scoreIncrease int, playSounds [assets.NumSounds]bool) {
+func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool, level int) (dead bool, playSounds [assets.NumSounds]bool) {
 
 	if t.removeLineAnimationStep > 0 {
 
@@ -129,13 +132,13 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 
 		switch t.toRemoveNum {
 		case 1:
-			scoreIncrease += 40 * (level + 1)
+			t.score += 40 * (level + 1)
 		case 2:
-			scoreIncrease += 100 * (level + 1)
+			t.score += 100 * (level + 1)
 		case 3:
-			scoreIncrease += 300 * (level + 1)
+			t.score += 300 * (level + 1)
 		case 4:
-			scoreIncrease += 1200 * (level + 1)
+			t.score += 1200 * (level + 1)
 		}
 		t.numLines += t.toRemoveNum
 
@@ -237,7 +240,7 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 
 		t.toCheck = t.currentBlock.writeInGrid(&t.area)
 
-		scoreIncrease = t.dropLenght
+		t.score += t.dropLenght
 
 		t.toRemoveNum, t.firstAvailable, t.toRemove = t.checkLines()
 
