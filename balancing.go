@@ -84,6 +84,7 @@ func (b *balancing) update() (end bool) {
 
 	if end {
 		b.setChoice(b.choices[b.choice])
+		b.choice = 0
 	}
 
 	return
@@ -203,20 +204,17 @@ BalanceLoop:
 		take := rand.Intn(len(possibleChoices))
 		b.choices[choice] = possibleChoices[take]
 
-		possibleChoices[take], possibleChoices[len(possibleChoices)-1] = possibleChoices[len(possibleChoices)-1], possibleChoices[take]
-		possibleChoices = possibleChoices[:len(possibleChoices)-1]
+		possibleChoices = removeElement(possibleChoices, take)
 
-		if take-1 >= 0 && take-1 < len(possibleChoices) {
-			if b.choices[choice] == possibleChoices[take-1] {
-				possibleChoices[take-1], possibleChoices[len(possibleChoices)-1] = possibleChoices[len(possibleChoices)-1], possibleChoices[take-1]
-				possibleChoices = possibleChoices[:len(possibleChoices)-1]
-			}
-		}
-
-		if take+1 >= 0 && take+1 < len(possibleChoices) {
-			if b.choices[choice] == possibleChoices[take+1] {
-				possibleChoices[take+1], possibleChoices[len(possibleChoices)-1] = possibleChoices[len(possibleChoices)-1], possibleChoices[take+1]
-				possibleChoices = possibleChoices[:len(possibleChoices)-1]
+		found := true
+		for found {
+			found = false
+			for i := range possibleChoices {
+				if possibleChoices[i] == b.choices[choice] {
+					possibleChoices = removeElement(possibleChoices, i)
+					found = true
+					break
+				}
 			}
 		}
 	}
@@ -257,7 +255,7 @@ func (b balancing) getHiddenLines() (numLines int) {
 
 func (b balancing) getGoalLines() int {
 	var goalLines [maxLevelGoalLines + 1]int = [maxLevelGoalLines + 1]int{
-		10, 15, 20, 30,
+		0, 15, 20, 30,
 	}
 
 	if b.levels[balanceGoalLines] < len(goalLines) {
@@ -276,6 +274,10 @@ func (b balancing) getSpeedLevel(baseSpeedLevel int) int {
 		id = len(speedLevels) - 1
 	}
 	baseSpeedLevel += speedLevels[id]
+
+	if baseSpeedLevel >= gSpeedLevels {
+		baseSpeedLevel = gSpeedLevels - 1
+	}
 
 	return baseSpeedLevel
 }

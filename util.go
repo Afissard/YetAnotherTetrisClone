@@ -50,3 +50,9 @@ func drawNumberAt(screen *ebiten.Image, gray uint8, x, y int, num int) {
 	}
 
 }
+
+// remove one element from a slice of int
+func removeElement(t []int, pos int) []int {
+	t[pos], t[len(t)-1] = t[len(t)-1], t[pos]
+	return t[:len(t)-1]
+}
