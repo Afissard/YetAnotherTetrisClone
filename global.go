@@ -61,6 +61,8 @@ const (
 	gChoiceSelectionNumFrame int = 30 // number of frames for changing balancing choice
 
 	gSpeedLevels int = 21
+
+	gInvisibleNumFrames int = 60 // num frames for one step of invisibility
 )
 
 var gSpeeds [gSpeedLevels]int = [gSpeedLevels]int{

@@ -33,14 +33,16 @@ const (
 	balanceSpeed
 	balanceHiddenLines
 	balanceDeathLines
+	balanceInvisibleBlocks
 	numBalances
 )
 
 const (
-	maxLevelGoalLines   = 3
-	maxLevelSpeed       = 5
-	maxLevelHiddenLines = 5
-	maxLevelDeathLines  = 5
+	maxLevelGoalLines       = 3
+	maxLevelSpeed           = 5
+	maxLevelHiddenLines     = 5
+	maxLevelDeathLines      = 5
+	maxLevelInvisibleBlocks = 3
 )
 
 type balancing struct {
@@ -179,6 +181,7 @@ func newBalance(numChoices int) balancing {
 	b.maxLevels[balanceSpeed] = maxLevelSpeed
 	b.maxLevels[balanceHiddenLines] = maxLevelHiddenLines
 	b.maxLevels[balanceDeathLines] = maxLevelDeathLines
+	b.maxLevels[balanceInvisibleBlocks] = maxLevelInvisibleBlocks
 	return b
 }
 
@@ -255,7 +258,7 @@ func (b balancing) getHiddenLines() (numLines int) {
 
 func (b balancing) getGoalLines() int {
 	var goalLines [maxLevelGoalLines + 1]int = [maxLevelGoalLines + 1]int{
-		0, 15, 20, 30,
+		1, 15, 20, 30,
 	}
 
 	if b.levels[balanceGoalLines] < len(goalLines) {
@@ -280,4 +283,8 @@ func (b balancing) getSpeedLevel(baseSpeedLevel int) int {
 	}
 
 	return baseSpeedLevel
+}
+
+func (b balancing) getInvisibleBlocks() int {
+	return b.levels[balanceInvisibleBlocks]
 }

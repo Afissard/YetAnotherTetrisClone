@@ -55,6 +55,10 @@ type tetris struct {
 	removeLineAnimationFrame         int
 	removeLineAnimationStep          int
 	removeLineAnimationStepNumFrames int
+	// invisible blocks handling
+	invisibleLevel int
+	invisibleStep  int
+	invisibleFrame int
 }
 
 func (t *tetris) init(level int, balance balancing, speedLevel int) {
@@ -82,6 +86,9 @@ func (t *tetris) init(level int, balance balancing, speedLevel int) {
 	t.removeLineAnimationFrame = 0
 	t.removeLineAnimationStep = 0
 	t.removeLineAnimationStepNumFrames = 8
+	t.invisibleFrame = 0
+	t.invisibleStep = maxLevelInvisibleBlocks
+	t.invisibleLevel = balance.getInvisibleBlocks()
 }
 
 func (t *tetris) setUpNext() (dead bool) {
@@ -93,6 +100,9 @@ func (t *tetris) setUpNext() (dead bool) {
 	t.nextBlock = futureBlock
 
 	t.manualMoveAllowed = false
+
+	t.invisibleFrame = 0
+	t.invisibleStep = maxLevelInvisibleBlocks
 
 	return
 }
@@ -136,6 +146,15 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 		dead = t.setUpNext()
 
 		return
+	}
+
+	t.invisibleFrame++
+	if t.invisibleFrame >= gInvisibleNumFrames {
+		t.invisibleStep--
+		t.invisibleFrame = 0
+		if t.invisibleStep <= 0 {
+			t.invisibleStep = maxLevelInvisibleBlocks
+		}
 	}
 
 	if rotateLeft && !rotateRight {
@@ -353,7 +372,9 @@ func (t tetris) draw(screen *ebiten.Image, gray uint8) {
 	yOrigin := gSquareSideSize * -gInvisibleLines
 
 	if t.removeLineAnimationStep == 0 {
-		t.currentBlock.draw(screen, gray, xOrigin, yOrigin)
+		if t.invisibleStep > t.invisibleLevel || t.currentBlock.y < gInvisibleLines {
+			t.currentBlock.draw(screen, gray, xOrigin, yOrigin)
+		}
 	}
 
 	for y, line := range t.area {
