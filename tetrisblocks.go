@@ -33,6 +33,7 @@ const (
 
 func getIBlock() tetrisBlock {
 	return tetrisBlock{
+		id:    2,
 		style: iBlockStyle,
 		states: [4][4][4]bool{
 			{{false, false, false, false},
@@ -57,6 +58,7 @@ func getIBlock() tetrisBlock {
 
 func getOBlock() tetrisBlock {
 	return tetrisBlock{
+		id:    3,
 		style: oBlockStyle,
 		states: [4][4][4]bool{
 			{{false, false, false, false},
@@ -81,6 +83,7 @@ func getOBlock() tetrisBlock {
 
 func getJBlock() tetrisBlock {
 	return tetrisBlock{
+		id:    1,
 		style: jBlockStyle,
 		states: [4][4][4]bool{
 			{{false, false, false, false},
@@ -105,6 +108,7 @@ func getJBlock() tetrisBlock {
 
 func getLBlock() tetrisBlock {
 	return tetrisBlock{
+		id:    0,
 		style: lBlockStyle,
 		states: [4][4][4]bool{
 			{{false, false, false, false},
@@ -129,6 +133,7 @@ func getLBlock() tetrisBlock {
 
 func getSBlock() tetrisBlock {
 	return tetrisBlock{
+		id:    5,
 		style: sBlockStyle,
 		states: [4][4][4]bool{
 			{{false, false, false, false},
@@ -153,6 +158,7 @@ func getSBlock() tetrisBlock {
 
 func getTBlock() tetrisBlock {
 	return tetrisBlock{
+		id:    6,
 		style: tBlockStyle,
 		states: [4][4][4]bool{
 			{{false, false, false, false},
@@ -177,6 +183,7 @@ func getTBlock() tetrisBlock {
 
 func getZBlock() tetrisBlock {
 	return tetrisBlock{
+		id:    4,
 		style: zBlockStyle,
 		states: [4][4][4]bool{
 			{{false, false, false, false},

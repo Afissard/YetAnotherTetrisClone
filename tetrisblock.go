@@ -31,6 +31,7 @@ type tetrisBlock struct {
 	r      int           // rotation state id
 	states [4][4][4]bool // possible rotation states of the block
 	style  int           // style of the block (for drawing)
+	id     int8          // identifier of the block for randomisation
 }
 
 func (t *tetrisBlock) setInitialPosition() {

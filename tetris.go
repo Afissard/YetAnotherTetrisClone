@@ -60,9 +60,9 @@ type tetris struct {
 func (t *tetris) init(level int, balance balancing, speedLevel int) {
 	if level == 0 {
 		t.area = tetrisGrid{}
-		t.currentBlock = getNewBlock()
+		t.currentBlock = getNewBlock(tetrisBlock{id: -1}, tetrisBlock{id: -1})
 		t.currentBlock.setInitialPosition()
-		t.nextBlock = getNewBlock()
+		t.nextBlock = getNewBlock(tetrisBlock{id: -1}, tetrisBlock{id: -1})
 	}
 	t.autoDownFrame = 0
 	t.autoDownFrameLimit = gSpeeds[balance.getSpeedLevel(speedLevel)]
@@ -87,9 +87,10 @@ func (t *tetris) init(level int, balance balancing, speedLevel int) {
 func (t *tetris) setUpNext() (dead bool) {
 	dead = t.lost()
 
+	futureBlock := getNewBlock(t.currentBlock, t.nextBlock)
 	t.currentBlock = t.nextBlock
 	t.currentBlock.setInitialPosition()
-	t.nextBlock = getNewBlock()
+	t.nextBlock = futureBlock
 
 	t.manualMoveAllowed = false
 
@@ -299,26 +300,45 @@ func (t tetris) lost() bool {
 	return false
 }
 
-func getNewBlock() (block tetrisBlock) {
+func getNewBlock(current, next tetrisBlock) (block tetrisBlock) {
 
-	switch rand.Intn(7) {
-	case 0:
-		block = getIBlock()
-	case 1:
-		block = getOBlock()
-	case 2:
-		block = getJBlock()
-	case 3:
-		block = getLBlock()
-	case 4:
-		block = getSBlock()
-	case 5:
-		block = getTBlock()
-	case 6:
-		block = getZBlock()
+	getRandomBlock := func() tetrisBlock {
+		switch rand.Intn(7) {
+		case 0:
+			return getIBlock()
+		case 1:
+			return getOBlock()
+		case 2:
+			return getJBlock()
+		case 3:
+			return getLBlock()
+		case 4:
+			return getSBlock()
+		case 5:
+			return getTBlock()
+		default:
+			return getZBlock()
+		}
 	}
 
-	return
+	if current.id < 0 || next.id < 0 {
+		return getRandomBlock()
+	}
+
+	count := 0
+	block = getRandomBlock()
+
+	for count < 2 {
+
+		if current.id|next.id|block.id != next.id {
+			return block
+		}
+
+		block = getRandomBlock()
+		count++
+	}
+
+	return block
 
 }
 

@@ -236,7 +236,7 @@ func (b *balancing) setChoice(choice int) {
 func (b balancing) getDeathLines() (numLines int) {
 	const maxDeathLines int = 2*gPlayAreaHeightInBlocks/3 - 1
 
-	numLines = b.levels[balanceDeathLines] + 2
+	numLines = 2*b.levels[balanceDeathLines] + 1
 	if numLines > maxDeathLines {
 		numLines = maxDeathLines
 	}
