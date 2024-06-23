@@ -28,12 +28,16 @@ func (g *game) Update() (err error) {
 
 	g.audio.NextSounds = [assets.NumSounds]bool{}
 
+	betterRotation := g.improv.levels[improveResetAutoDown] > 0
+	canHold := g.improv.levels[improveHold] > 0
+	life := g.improv.levels[improveLife]
+
 	switch g.state {
 	case stateTitle:
 		if g.updateStateTitle() {
 			g.state = statePlay
 			g.balance = newBalance(g.numChoices)
-			g.currentPlay.init(g.level, g.balance, g.level, 0)
+			g.currentPlay.init(g.level, g.balance, g.level, 0, betterRotation, canHold, life, life)
 		}
 	case statePlay:
 		if g.updateStatePlay() {
@@ -48,7 +52,7 @@ func (g *game) Update() (err error) {
 	case stateBalance:
 		if g.balance.update() {
 			g.state = statePlay
-			g.currentPlay.init(g.level, g.balance, g.level, g.currentPlay.score)
+			g.currentPlay.init(g.level, g.balance, g.level, g.currentPlay.score, betterRotation, canHold, life, g.currentPlay.currentLife)
 		}
 	case stateLost:
 		if g.money.update() {
@@ -76,6 +80,7 @@ func (g *game) updateStatePlay() bool {
 		ebiten.IsKeyPressed(ebiten.KeyDown),
 		ebiten.IsKeyPressed(ebiten.KeyLeft),
 		ebiten.IsKeyPressed(ebiten.KeyRight),
+		inpututil.IsKeyJustPressed(ebiten.KeyUp),
 		inpututil.IsKeyJustPressed(ebiten.KeySpace),
 		inpututil.IsKeyJustPressed(ebiten.KeyEnter),
 		g.level,

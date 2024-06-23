@@ -35,6 +35,7 @@ type tetris struct {
 	area                  tetrisGrid
 	currentBlock          tetrisBlock
 	nextBlock             tetrisBlock
+	heldBlock             tetrisBlock
 	autoDownFrame         int
 	autoDownFrameLimit    int
 	manualDownFrame       int
@@ -61,14 +62,20 @@ type tetris struct {
 	invisibleFrame int
 	// count score
 	score int
+	// improvements
+	betterRotation bool
+	canHold        bool
+	life           int
+	currentLife    int
 }
 
-func (t *tetris) init(level int, balance balancing, speedLevel int, score int) {
+func (t *tetris) init(level int, balance balancing, speedLevel int, score int, betterRotation, canHold bool, life, currentLife int) {
 	if level == 0 {
 		t.area = tetrisGrid{}
 		t.currentBlock = getNewBlock(tetrisBlock{id: -1}, tetrisBlock{id: -1})
 		t.currentBlock.setInitialPosition()
 		t.nextBlock = getNewBlock(tetrisBlock{id: -1}, tetrisBlock{id: -1})
+		t.heldBlock = tetrisBlock{id: -1}
 	}
 	t.autoDownFrame = 0
 	t.autoDownFrameLimit = gSpeeds[balance.getSpeedLevel(speedLevel)]
@@ -92,6 +99,11 @@ func (t *tetris) init(level int, balance balancing, speedLevel int, score int) {
 	t.invisibleStep = maxLevelInvisibleBlocks
 	t.invisibleLevel = balance.getInvisibleBlocks()
 	t.score = score
+
+	t.betterRotation = betterRotation
+	t.canHold = canHold
+	t.life = life
+	t.currentLife = currentLife
 }
 
 func (t *tetris) setUpNext() (dead bool) {
@@ -110,7 +122,7 @@ func (t *tetris) setUpNext() (dead bool) {
 	return
 }
 
-func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rotateLeft, rotateRight bool, level int) (dead bool, playSounds [assets.NumSounds]bool) {
+func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, holdRequest, rotateLeft, rotateRight bool, level int) (dead bool, playSounds [assets.NumSounds]bool) {
 
 	if t.removeLineAnimationStep > 0 {
 
@@ -151,6 +163,20 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 		return
 	}
 
+	if t.canHold && holdRequest {
+		if canReplace(t.currentBlock.x, t.currentBlock.y, t.heldBlock, t.nextBlock, t.area) {
+			t.heldBlock, t.currentBlock = t.currentBlock, t.heldBlock
+			if t.currentBlock.id < 0 {
+				t.currentBlock = t.nextBlock
+				t.nextBlock = getNewBlock(t.heldBlock, t.currentBlock)
+			}
+			t.currentBlock.x = t.heldBlock.x
+			t.currentBlock.y = t.heldBlock.y
+			t.heldBlock.x = 0
+			t.heldBlock.y = 0
+		}
+	}
+
 	t.invisibleFrame++
 	if t.invisibleFrame >= gInvisibleNumFrames {
 		t.invisibleStep--
@@ -160,12 +186,19 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, rota
 		}
 	}
 
+	effectiveRotation := false
+
 	if rotateLeft && !rotateRight {
-		playSounds[assets.SoundRotationID] = t.currentBlock.rotateLeft(t.area)
+		effectiveRotation = t.currentBlock.rotateLeft(t.area)
 	}
 
 	if rotateRight && !rotateLeft {
-		playSounds[assets.SoundRotationID] = t.currentBlock.rotateRight(t.area)
+		effectiveRotation = t.currentBlock.rotateRight(t.area)
+	}
+
+	playSounds[assets.SoundRotationID] = effectiveRotation
+	if effectiveRotation && t.betterRotation {
+		t.autoDownFrame = 0
 	}
 
 	mayAllowManualMoves := false
@@ -309,13 +342,17 @@ func (t *tetris) removeLines() {
 
 }
 
-// check if their is anything in the above area
+// check if there is anything in the above area
 // which would mean that the game is lost
-func (t tetris) lost() bool {
+func (t *tetris) lost() bool {
+	t.currentLife = t.life
 	for _, line := range t.area[:gInvisibleLines+t.deathLines] {
 		for _, v := range line {
 			if v != 0 {
-				return true
+				t.currentLife--
+				if t.currentLife < 0 {
+					return true
+				}
 			}
 		}
 	}

@@ -164,3 +164,18 @@ func (t tetrisBlock) draw(screen *ebiten.Image, gray uint8, xFrom, yFrom int) {
 		}
 	}
 }
+
+// check if
+func canReplace(atX, atY int, preferedBlock, otherBlock tetrisBlock, grid tetrisGrid) bool {
+
+	if preferedBlock.id >= 0 {
+		preferedBlock.x = atX
+		preferedBlock.y = atY
+		return preferedBlock.isInValidPosition(grid)
+	}
+
+	otherBlock.x = atX
+	otherBlock.y = atY
+
+	return otherBlock.isInValidPosition(grid)
+}
