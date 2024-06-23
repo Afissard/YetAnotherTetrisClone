@@ -65,6 +65,10 @@ const (
 	gInvisibleNumFrames int = 60 // num frames for one step of invisibility
 
 	gCoinSideSize int = 32 // size of the side of the coin image in pixels
+
+	gImproveTextWidth  int = 128 // width of text for improvements in pixels
+	gImproveTextHeight int = 64  // height of text for improvements in pixels
+
 )
 
 var gSpeeds [gSpeedLevels]int = [gSpeedLevels]int{

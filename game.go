@@ -37,6 +37,7 @@ type game struct {
 	numChoices  int
 	audio       assets.SoundManager
 	money       moneyHandler
+	improv      improvements
 }
 
 func (g *game) init() {
@@ -44,4 +45,5 @@ func (g *game) init() {
 	g.state = stateTitle
 	g.firstPlay = true
 	g.numChoices = 3
+	g.improv = setupImprovements()
 }

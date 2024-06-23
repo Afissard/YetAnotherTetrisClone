@@ -56,6 +56,18 @@ var ImageCoin *ebiten.Image
 var imageBigdigitsBytes []byte
 var ImageBigdigits *ebiten.Image
 
+//go:embed improvements.png
+var imageImprovementsBytes []byte
+var ImageImprovements *ebiten.Image
+
+//go:embed improvementsarrow.png
+var imageImprovementsArrowBytes []byte
+var ImageImprovementsArrow *ebiten.Image
+
+//go:embed max.png
+var imageMaxBytes []byte
+var ImageMax *ebiten.Image
+
 func Load(mult int) {
 	var err error
 
@@ -106,6 +118,24 @@ func Load(mult int) {
 		log.Fatal(err)
 	}
 	ImageBigdigits = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageImprovementsBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageImprovements = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageImprovementsArrowBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageImprovementsArrow = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageMaxBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageMax = ebiten.NewImageFromImage(imageDecoded)
 }
 
 func resize(img *ebiten.Image, mult int) (res *ebiten.Image) {

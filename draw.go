@@ -37,6 +37,8 @@ func (g *game) Draw(screen *ebiten.Image) {
 	case stateLost:
 		g.drawPlay(screen, 100)
 		g.money.draw(screen)
+	case stateImprove:
+		g.drawStateImprove(screen)
 	}
 
 	// play sounds

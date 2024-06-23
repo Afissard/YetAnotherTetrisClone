@@ -52,11 +52,15 @@ func (g *game) Update() (err error) {
 		}
 	case stateLost:
 		if g.money.update() {
-			g.state = stateTitle
+			g.state = stateImprove
 			g.firstPlay = false
 			g.level = 0
 		}
 		g.currentPlay.score = g.money.score
+	case stateImprove:
+		if g.updateStateImprove() {
+			g.state = stateTitle
+		}
 	}
 
 	return nil

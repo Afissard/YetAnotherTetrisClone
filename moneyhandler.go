@@ -115,6 +115,9 @@ func (m *moneyHandler) addScore(score int) {
 func (m *moneyHandler) update() bool {
 
 	if m.score > 0 {
+		if m.score < m.scoreReduction {
+			m.scoreReduction = m.score
+		}
 		m.score -= m.scoreReduction
 		m.count += m.scoreReduction
 		m.nextCoin += m.scoreReduction
@@ -124,7 +127,7 @@ func (m *moneyHandler) update() bool {
 			m.count = 0
 		}
 
-		if m.nextCoin/100 > 0 && m.score >= 0 {
+		if m.nextCoin/100 > 0 {
 			m.nextCoin -= 100
 			m.numActive++
 			theCoin := newCoinAnimator(gWidth-gXScoreFromRightSide+gMultFactor-gSquareSideSize/2, gYScoreFromTop+gSquareSideSize/2, gWidth/2, gHeight/2)
@@ -167,9 +170,20 @@ func (m *moneyHandler) update() bool {
 
 func (m moneyHandler) draw(screen *ebiten.Image) {
 
+	drawMoney(screen, gWidth/2, gHeight/2, m.displayMoney, true)
+
+	for _, c := range m.coins {
+		if c.active {
+			c.draw(screen)
+		}
+	}
+
+}
+
+func drawMoney(screen *ebiten.Image, x, y int, money int, symbolFirst bool) {
 	options := ebiten.DrawImageOptions{}
 
-	num := m.displayMoney
+	num := money
 	displaySize := 0
 	for num/10 > 0 {
 		displaySize++
@@ -180,10 +194,15 @@ func (m moneyHandler) draw(screen *ebiten.Image) {
 	}
 	displaySize++
 
-	options.GeoM.Translate(float64(gWidth-(gWidth-displaySize*gCoinSideSize)/2), float64(gHeight-gCoinSideSize)/2)
+	options.GeoM.Translate(float64(x+(displaySize*gCoinSideSize)/2), float64(y-gCoinSideSize/2))
+
+	if !symbolFirst {
+		options.GeoM.Translate(float64(-gCoinSideSize), float64(0))
+		screen.DrawImage(assets.ImageCoin, &options)
+	}
 
 	atLeastOnce := true
-	num = m.displayMoney
+	num = money
 	for num > 0 || atLeastOnce {
 		atLeastOnce = false
 		digit := num % 10
@@ -193,13 +212,8 @@ func (m moneyHandler) draw(screen *ebiten.Image) {
 		screen.DrawImage(assets.ImageBigdigits.SubImage(image.Rect(digit*gCoinSideSize, 0, (digit+1)*gCoinSideSize, gCoinSideSize)).(*ebiten.Image), &options)
 	}
 
-	options.GeoM.Translate(float64(-gCoinSideSize), float64(0))
-	screen.DrawImage(assets.ImageCoin, &options)
-
-	for _, c := range m.coins {
-		if c.active {
-			c.draw(screen)
-		}
+	if symbolFirst {
+		options.GeoM.Translate(float64(-gCoinSideSize), float64(0))
+		screen.DrawImage(assets.ImageCoin, &options)
 	}
-
 }
