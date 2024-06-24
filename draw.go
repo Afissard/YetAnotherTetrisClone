@@ -60,7 +60,7 @@ func (g game) drawPlay(screen *ebiten.Image, gray uint8) {
 	// draw level
 	drawNumberAt(screen, gray, gWidth-gXLevelFromRightSide+gMultFactor, gYLevelFromTop, g.level)
 	// hide lines
-	vector.DrawFilledRect(screen, float32(gPlayAreaSide), float32(gPlayAreaHeight), float32(gPlayAreaWidth), -float32(g.balance.getHiddenLines()*gSquareSideSize), color.Black, false)
+	g.fog.draw(screen)
 	// death lines
 	if !g.firstPlay || g.level > 0 {
 		vector.StrokeRect(screen, float32(gPlayAreaSide), 0, float32(gPlayAreaWidth), float32(g.currentPlay.deathLines*gSquareSideSize), 2, color.Black, false)

@@ -68,6 +68,10 @@ var ImageImprovementsArrow *ebiten.Image
 var imageMaxBytes []byte
 var ImageMax *ebiten.Image
 
+//go:embed fog.png
+var imageFogBytes []byte
+var ImageFog *ebiten.Image
+
 func Load(mult int) {
 	var err error
 
@@ -136,6 +140,12 @@ func Load(mult int) {
 		log.Fatal(err)
 	}
 	ImageMax = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageFogBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageFog = ebiten.NewImageFromImage(imageDecoded)
 }
 
 func resize(img *ebiten.Image, mult int) (res *ebiten.Image) {

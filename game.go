@@ -38,6 +38,7 @@ type game struct {
 	audio       assets.SoundManager
 	money       moneyHandler
 	improv      improvements
+	fog         fog
 }
 
 func (g *game) init() {

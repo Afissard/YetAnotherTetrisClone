@@ -38,6 +38,7 @@ func (g *game) Update() (err error) {
 			g.state = statePlay
 			g.balance = newBalance(g.numChoices)
 			g.currentPlay.init(g.level, g.balance, g.level, 0, betterRotation, canHold, life, life)
+			g.fog.reset(g.balance.getHiddenLines(), g.improv.levels[improveHideMove])
 		}
 	case statePlay:
 		if g.updateStatePlay() {
@@ -53,6 +54,7 @@ func (g *game) Update() (err error) {
 		if g.balance.update() {
 			g.state = statePlay
 			g.currentPlay.init(g.level, g.balance, g.level, g.currentPlay.score, betterRotation, canHold, life, g.currentPlay.currentLife)
+			g.fog.reset(g.balance.getHiddenLines(), g.improv.levels[improveHideMove])
 		}
 	case stateLost:
 		if g.money.update() {
@@ -87,6 +89,8 @@ func (g *game) updateStatePlay() bool {
 	)
 
 	g.audio.NextSounds = sounds
+
+	g.fog.update()
 
 	return dead
 }

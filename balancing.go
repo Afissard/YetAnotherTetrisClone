@@ -38,7 +38,7 @@ const (
 )
 
 const (
-	maxLevelGoalLines       = 3
+	maxLevelGoalLines       = 2
 	maxLevelSpeed           = 5
 	maxLevelHiddenLines     = 5
 	maxLevelDeathLines      = 5
@@ -258,7 +258,7 @@ func (b balancing) getHiddenLines() (numLines int) {
 
 func (b balancing) getGoalLines() int {
 	var goalLines [maxLevelGoalLines + 1]int = [maxLevelGoalLines + 1]int{
-		10, 15, 20, 30,
+		4, 8, 12,
 	}
 
 	if b.levels[balanceGoalLines] < len(goalLines) {
