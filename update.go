@@ -93,8 +93,8 @@ func (g *game) updateStatePlay() bool {
 		ebiten.IsKeyPressed(ebiten.KeyLeft),
 		ebiten.IsKeyPressed(ebiten.KeyRight),
 		inpututil.IsKeyJustPressed(ebiten.KeyUp),
+		inpututil.IsKeyJustPressed(ebiten.KeyAlt),
 		inpututil.IsKeyJustPressed(ebiten.KeySpace),
-		inpututil.IsKeyJustPressed(ebiten.KeyEnter),
 		g.level,
 	)
 
