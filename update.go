@@ -61,6 +61,7 @@ func (g *game) Update() (err error) {
 			g.state = stateImprove
 			g.firstPlay = false
 			g.level = 0
+			g.improv.reset()
 		}
 		g.currentPlay.score = g.money.score
 	case stateImprove:

@@ -20,10 +20,15 @@ package main
 
 import (
 	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/loig/ebitenginegamejam2024/assets"
+)
+
+const (
+	numArrowBlinkFrame int = 30
 )
 
 const (
@@ -35,9 +40,10 @@ const (
 )
 
 type improvements struct {
-	prices  [numImprove][]int
-	levels  [numImprove]int
-	current int
+	prices          [numImprove][]int
+	levels          [numImprove]int
+	current         int
+	arrowBlinkFrame int
 }
 
 func setupImprovements() (imp improvements) {
@@ -48,20 +54,54 @@ func setupImprovements() (imp improvements) {
 	return
 }
 
+func (i *improvements) reset() {
+	i.arrowBlinkFrame = 0
+	i.current = 0
+	for i.current != numImprove && i.levels[i.current] >= len(i.prices[i.current]) {
+		i.current = (i.current + 1) % (numImprove + 1)
+	}
+}
+
+func drawMaxed(screen *ebiten.Image, x, y int) {
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Translate(float64(x), float64(y))
+	screen.DrawImage(assets.ImageMax, &options)
+}
+
+func drawArrow(screen *ebiten.Image, x, y int, rotate float64, blink int) {
+	if blink < 2*numArrowBlinkFrame/3 {
+		options := ebiten.DrawImageOptions{}
+		options.GeoM.Rotate(rotate)
+		options.GeoM.Translate(float64(x), float64(y))
+		screen.DrawImage(assets.ImageImprovementsArrow, &options)
+	}
+}
+
+func drawContinue(screen *ebiten.Image, x, y int, selected bool, blink int) {
+
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Translate(float64(x), float64(y))
+	screen.DrawImage(assets.ImageContinue, &options)
+
+	if selected {
+		drawArrow(screen, x-5, y+(gContinueHeight-gArrowWidth)/2, math.Pi/2, blink)
+		drawArrow(screen, x+gContinueWidth+5, y+(gContinueHeight-gArrowWidth)/2+gArrowWidth, -math.Pi/2, blink)
+	}
+}
+
 func (g game) drawStateImprove(screen *ebiten.Image) {
 
-	yStart := 128
-	xSeparator := 100
-	ySeparator := xSeparator
+	yStart := 256 + gCoinSideSize
+	xSeparator := 70
 
-	//drawMoney(screen, gWidth/2, yStart, g.money.money, true)
+	drawMoney(screen, gWidth/2, yStart-gCoinSideSize, g.money.money, true, 1)
 
-	x := (gWidth - (2*gImproveTextWidth + xSeparator)) / 2
+	drawContinue(screen, (gWidth-gContinueWidth)/2, gHeight-gContinueHeight-gTitleMargin, g.improv.current == numImprove, g.improv.arrowBlinkFrame)
+
+	x := (gWidth - (4*gImproveTextWidth + 3*xSeparator)) / 2
 	y := yStart
 
-	xTranslation := 0
-	firstLine := true
-	for i := 0; i <= numImprove; i++ {
+	for i := 0; i < numImprove; i++ {
 
 		options := ebiten.DrawImageOptions{}
 		options.GeoM.Translate(float64(x), float64(y))
@@ -69,44 +109,50 @@ func (g game) drawStateImprove(screen *ebiten.Image) {
 
 		if i != numImprove {
 			if len(g.improv.prices[i]) > g.improv.levels[i] {
-				drawMoney(screen, x+3*gImproveTextWidth/5, y+gImproveTextHeight, g.improv.prices[i][g.improv.levels[i]], false, 0.5)
+				drawMoney(screen, x+3*gImproveTextWidth/5, y+gImproveTextHeight, g.improv.prices[i][g.improv.levels[i]], false, 0.4)
 			} else {
-				options.GeoM.Translate(float64(gImproveTextWidth-gMaxWidth)/2, float64(gImproveTextHeight)-10)
-				screen.DrawImage(assets.ImageMax, &options)
+				drawMaxed(screen, x+(gImproveTextWidth-gMaxWidth)/2, y+gImproveTextHeight-14)
 			}
 		}
 
 		if g.improv.current == i {
-			options.GeoM.Translate(float64(-gArrowWidth), float64(gImproveTextHeight-gArrowHeight)/2)
-			screen.DrawImage(assets.ImageImprovementsArrow, &options)
+			drawArrow(screen, x+(gImproveTextWidth-gArrowWidth)/2, y+gImproveTextHeight+40, 0, g.improv.arrowBlinkFrame)
 		}
 
-		if !firstLine || i < numImprove/2-1 {
-			x += gImproveTextWidth + xSeparator
-			xTranslation += gImproveTextWidth + xSeparator
-		} else {
-			x -= xTranslation
-			y += gImproveTextHeight + ySeparator
-			firstLine = false
-		}
-
+		x += gImproveTextWidth + xSeparator
 	}
 
 }
 
 func (g *game) updateStateImprove() bool {
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyUp) || inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+	g.improv.arrowBlinkFrame++
+	if g.improv.arrowBlinkFrame >= numArrowBlinkFrame {
+		g.improv.arrowBlinkFrame = 0
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
 		g.improv.current = (g.improv.current + numImprove) % (numImprove + 1)
 		for g.improv.current != numImprove && g.improv.levels[g.improv.current] >= len(g.improv.prices[g.improv.current]) {
 			g.improv.current = (g.improv.current + numImprove) % (numImprove + 1)
 		}
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyDown) || inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
 		g.improv.current = (g.improv.current + 1) % (numImprove + 1)
 		for g.improv.current != numImprove && g.improv.levels[g.improv.current] >= len(g.improv.prices[g.improv.current]) {
 			g.improv.current = (g.improv.current + 1) % (numImprove + 1)
+		}
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyDown) || inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+		if g.improv.current != numImprove {
+			g.improv.current = numImprove
+		} else {
+			g.improv.current = 0
+			for g.improv.current != numImprove && g.improv.levels[g.improv.current] >= len(g.improv.prices[g.improv.current]) {
+				g.improv.current = (g.improv.current + 1) % (numImprove + 1)
+			}
 		}
 	}
 
@@ -115,9 +161,11 @@ func (g *game) updateStateImprove() bool {
 			return true
 		}
 
-		if g.improv.prices[g.improv.current][g.improv.levels[g.improv.current]] <= g.money.money {
-			g.money.money -= g.improv.prices[g.improv.current][g.improv.levels[g.improv.current]]
-			g.improv.levels[g.improv.current]++
+		if g.improv.levels[g.improv.current] < len(g.improv.prices[g.improv.current]) {
+			if g.improv.prices[g.improv.current][g.improv.levels[g.improv.current]] <= g.money.money {
+				g.money.money -= g.improv.prices[g.improv.current][g.improv.levels[g.improv.current]]
+				g.improv.levels[g.improv.current]++
+			}
 		}
 	}
 

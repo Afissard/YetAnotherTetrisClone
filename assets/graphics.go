@@ -92,6 +92,10 @@ var ImageShopBack *ebiten.Image
 var imageShopTitleBytes []byte
 var ImageShopTitle *ebiten.Image
 
+//go:embed continue.png
+var imageContinueBytes []byte
+var ImageContinue *ebiten.Image
+
 func Load(mult int) {
 	var err error
 
@@ -196,6 +200,12 @@ func Load(mult int) {
 		log.Fatal(err)
 	}
 	ImageShopTitle = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageContinueBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageContinue = ebiten.NewImageFromImage(imageDecoded)
 }
 
 func resize(img *ebiten.Image, mult int) (res *ebiten.Image) {

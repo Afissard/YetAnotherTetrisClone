@@ -72,15 +72,18 @@ const (
 	gDangerSide int = 218 // width/height of the danger zone symbol in pixels
 
 	gLevelCompleteWidth int = 762 // width of the title of the end of level screen in pixels
-	gYouLoseWidth       int = 762 // width of the title of the lose screen in pixels
+	gYouLoseWidth       int = 385 // width of the title of the lose screen in pixels
 	gShopTitleWidth     int = 662 // width of the title of the shop screen in pixels
 
 	gTitleMargin int = 20 // margin on top of the end of level/lose/shop screens in pixels
 
 	gMaxWidth int = 199 // width of "maxed" in pixels
 
-	gArrowWidth  int = 64 // width of the improvement selection arrow in pixels
-	gArrowHeight int = 64 // height of the improvement selection arrow in pixels
+	gArrowWidth  int = 60 // width of the improvement selection arrow in pixels
+	gArrowHeight int = 51 // height of the improvement selection arrow in pixels
+
+	gContinueHeight int = 32  // height of the continue button in the shop
+	gContinueWidth  int = 323 // width of the continue button in the shop
 
 )
 
