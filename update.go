@@ -28,6 +28,8 @@ func (g *game) Update() (err error) {
 
 	g.audio.NextSounds = [assets.NumSounds]bool{}
 
+	g.audio.UpdateMusic(0.7)
+
 	betterRotation := g.improv.levels[improveResetAutoDown] > 0
 	canHold := g.improv.levels[improveHold] > 0
 	life := g.improv.levels[improveLife]*2 - 1

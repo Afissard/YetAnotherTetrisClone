@@ -23,8 +23,11 @@ import (
 	_ "embed"
 	"io"
 	"log"
+	"math"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
+	"github.com/hajimehoshi/ebiten/v2/audio/mp3"
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 )
 
@@ -72,6 +75,10 @@ var soundDeath []byte
 var soundMenuNoBytes []byte
 var soundMenuNo []byte
 
+//go:embed tetris.mp3
+var musicBytes []byte
+var music *audio.InfiniteLoop
+
 const (
 	SoundRotationID int = iota
 	SoundLeftRightID
@@ -90,6 +97,18 @@ const (
 type SoundManager struct {
 	audioContext *audio.Context
 	NextSounds   [NumSounds]bool
+	music        *audio.Player
+}
+
+// loop the music
+func (s *SoundManager) UpdateMusic(volume float64) {
+	if s.music != nil {
+		if !s.music.IsPlaying() {
+			s.music.Rewind()
+			s.music.Play()
+		}
+		s.music.SetVolume(volume)
+	}
 }
 
 // play requested sounds
@@ -131,6 +150,7 @@ func (s SoundManager) playSound(sound int) {
 
 	if len(soundBytes) > 0 {
 		soundPlayer := s.audioContext.NewPlayerFromBytes(soundBytes)
+		soundPlayer.SetVolume(0.1)
 		soundPlayer.Play()
 	}
 }
@@ -140,6 +160,20 @@ func InitAudio() (manager SoundManager) {
 
 	var error error
 	manager.audioContext = audio.NewContext(44100)
+
+	// music
+	soundmp3, error := mp3.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(musicBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	tduration, _ := time.ParseDuration("2m50s656ms")
+	duration := tduration.Seconds()
+	theBytes := int64(math.Round(duration * 4 * float64(44100)))
+	music = audio.NewInfiniteLoop(soundmp3, theBytes)
+	manager.music, error = manager.audioContext.NewPlayer(music)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
 
 	// sounds
 	sound, error := wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundRotationBytes))
