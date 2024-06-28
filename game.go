@@ -43,7 +43,7 @@ type game struct {
 
 func (g *game) init() {
 	g.audio = assets.InitAudio()
-	g.state = stateImprove //stateTitle
+	g.state = stateTitle
 	g.firstPlay = true
 	g.numChoices = 3
 	g.improv = setupImprovements()

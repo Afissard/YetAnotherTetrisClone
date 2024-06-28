@@ -73,7 +73,7 @@ func (g game) drawPlay(screen *ebiten.Image, gray uint8) {
 	// draw level
 	drawNumberAt(screen, gray, gWidth-gXLevelFromRightSide+gMultFactor, gYLevelFromTop, g.level)
 	// hide lines
-	g.fog.draw(screen)
+	g.fog.draw(screen, gray)
 }
 
 func (g game) drawDeathLines(screen *ebiten.Image, gray uint8) {

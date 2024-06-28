@@ -85,6 +85,8 @@ const (
 	gContinueHeight int = 32  // height of the continue button in the shop
 	gContinueWidth  int = 323 // width of the continue button in the shop
 
+	gMoneyBackHeight int = 195 // height in pixels of the background for displaying money
+
 )
 
 var gSpeeds [gSpeedLevels]int = [gSpeedLevels]int{

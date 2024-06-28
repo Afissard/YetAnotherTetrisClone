@@ -19,6 +19,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/loig/ebitenginegamejam2024/assets"
 )
@@ -69,7 +71,7 @@ func (f *fog) update() {
 	}
 }
 
-func (f fog) draw(screen *ebiten.Image) {
+func (f fog) draw(screen *ebiten.Image, gray uint8) {
 
 	y := float64(gPlayAreaHeight - f.currentHiddenLines*gSquareSideSize)
 
@@ -85,6 +87,7 @@ func (f fog) draw(screen *ebiten.Image) {
 	if y > 0 {
 		options := ebiten.DrawImageOptions{}
 		options.GeoM.Translate(float64(gPlayAreaSide), y)
+		options.ColorScale.ScaleWithColor(color.Gray{gray})
 		screen.DrawImage(assets.ImageFog, &options)
 	}
 }

@@ -71,12 +71,16 @@ func (c *coinAnimator) update() bool {
 		if c.scale > 1 {
 			c.scale = 1
 		}
-	} else if c.frame >= 2*scoreCoinAnimationFrames/3 {
-		c.scale -= 1 / float64(scoreCoinAnimationFrames/3)
-		if c.scale < 0 {
-			c.scale = 0
-		}
 	}
+
+	/*
+		else if c.frame >= 2*scoreCoinAnimationFrames/3 {
+			c.scale -= 1 / float64(scoreCoinAnimationFrames/3)
+			if c.scale < 0 {
+				c.scale = 0
+			}
+		}
+	*/
 
 	c.x += float64(c.goalX-c.startX) / float64(scoreCoinAnimationFrames)
 	c.y += float64(c.goalY-c.startY) / float64(scoreCoinAnimationFrames)
@@ -130,7 +134,7 @@ func (m *moneyHandler) update() bool {
 		if m.nextCoin/100 > 0 {
 			m.nextCoin -= 100
 			m.numActive++
-			theCoin := newCoinAnimator(gWidth-gXScoreFromRightSide+gMultFactor-gSquareSideSize/2, gYScoreFromTop+gSquareSideSize/2, gWidth/2, gHeight/2)
+			theCoin := newCoinAnimator(gWidth-gXScoreFromRightSide+gMultFactor-gSquareSideSize/2, gYScoreFromTop+gSquareSideSize/2, gWidth/2, 3*gHeight/4)
 			if m.firstAvailableCoin >= len(m.coins) {
 				m.coins = append(m.coins, theCoin)
 				m.firstAvailableCoin++
@@ -174,7 +178,11 @@ func (m moneyHandler) draw(screen *ebiten.Image) {
 	options.GeoM.Translate(float64(gWidth-gYouLoseWidth)/2, float64(gTitleMargin))
 	screen.DrawImage(assets.ImageYouLose, &options)
 
-	drawMoney(screen, gWidth/2, gHeight/2, m.displayMoney, true, 1)
+	options = ebiten.DrawImageOptions{}
+	options.GeoM.Translate(0, float64(3*gHeight/4-gMoneyBackHeight/2))
+	screen.DrawImage(assets.ImageMoneyBack, &options)
+
+	drawMoney(screen, gWidth/2, 3*gHeight/4, m.displayMoney, true, 1)
 
 	for _, c := range m.coins {
 		if c.active {
