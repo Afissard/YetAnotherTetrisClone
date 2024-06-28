@@ -83,7 +83,7 @@ func (g *game) updateStateTitle() (end bool) {
 }
 
 func (g *game) updateStatePlay() bool {
-	dead, sounds := g.currentPlay.update(
+	sounds := g.currentPlay.update(
 		ebiten.IsKeyPressed(ebiten.KeyDown),
 		ebiten.IsKeyPressed(ebiten.KeyLeft),
 		ebiten.IsKeyPressed(ebiten.KeyRight),
@@ -97,5 +97,5 @@ func (g *game) updateStatePlay() bool {
 
 	g.fog.update()
 
-	return dead
+	return g.currentPlay.dead && !g.currentPlay.inAnimation
 }

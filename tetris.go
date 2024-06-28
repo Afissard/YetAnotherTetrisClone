@@ -64,10 +64,12 @@ type tetris struct {
 	// count score
 	score int
 	// improvements
-	betterRotation bool
-	canHold        bool
-	life           int
-	currentLife    int
+	betterRotation      bool
+	canHold             bool
+	life                int
+	currentLife         int
+	dead                bool
+	deathAnimationFrame int
 }
 
 func (t *tetris) init(level int, balance balancing, speedLevel int, score int, betterRotation, canHold bool, life, currentLife int) {
@@ -105,12 +107,19 @@ func (t *tetris) init(level int, balance balancing, speedLevel int, score int, b
 	t.canHold = canHold
 	t.life = life
 	t.currentLife = currentLife
+	t.dead = false
+	t.deathAnimationFrame = 0
 
 	t.inAnimation = false
 }
 
-func (t *tetris) setUpNext() (dead bool) {
-	dead = t.lost()
+func (t *tetris) setUpNext() {
+	t.lost()
+
+	if t.dead {
+		t.inAnimation = true
+		return
+	}
 
 	futureBlock := getNewBlock(t.currentBlock, t.nextBlock)
 	t.currentBlock = t.nextBlock
@@ -121,11 +130,17 @@ func (t *tetris) setUpNext() (dead bool) {
 
 	t.invisibleFrame = 0
 	t.invisibleStep = maxLevelInvisibleBlocks
-
-	return
 }
 
-func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, holdRequest, rotateLeft, rotateRight bool, level int) (dead bool, playSounds [assets.NumSounds]bool) {
+func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, holdRequest, rotateLeft, rotateRight bool, level int) (playSounds [assets.NumSounds]bool) {
+
+	if t.dead {
+		t.deathAnimationFrame++
+		if t.deathAnimationFrame >= 90 {
+			t.inAnimation = false
+		}
+		return
+	}
 
 	if t.removeLineAnimationStep > 0 {
 
@@ -164,7 +179,7 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, hold
 		t.toCheck = [2]int{}
 		t.inAnimation = false
 
-		dead = t.setUpNext()
+		t.setUpNext()
 
 		return
 	}
@@ -290,7 +305,7 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, hold
 			return
 		}
 
-		dead = t.setUpNext()
+		t.setUpNext()
 	}
 
 	return
@@ -351,19 +366,19 @@ func (t *tetris) removeLines() {
 
 // check if there is anything in the above area
 // which would mean that the game is lost
-func (t *tetris) lost() bool {
+func (t *tetris) lost() {
 	t.currentLife = t.life
 	for _, line := range t.area[:gInvisibleLines+t.deathLines] {
 		for _, v := range line {
 			if v != 0 {
 				t.currentLife--
 				if t.currentLife < 0 {
-					return true
+					t.dead = true
+					return
 				}
 			}
 		}
 	}
-	return false
 }
 
 func getNewBlock(current, next tetrisBlock) (block tetrisBlock) {
