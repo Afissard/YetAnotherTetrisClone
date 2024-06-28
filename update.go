@@ -45,9 +45,8 @@ func (g *game) Update() (err error) {
 			g.state = stateLost
 			g.money.addScore(g.currentPlay.score)
 		}
-		if g.currentPlay.numLines >= g.balance.getGoalLines() {
-			g.level++
-			if g.level >= g.goalLevel {
+		if !g.currentPlay.inAnimation && g.currentPlay.numLines >= g.balance.getGoalLines() {
+			if g.level+1 >= g.goalLevel {
 				g.state = stateWon
 				return nil
 			}
@@ -57,6 +56,7 @@ func (g *game) Update() (err error) {
 	case stateBalance:
 		if g.balance.update() {
 			g.state = statePlay
+			g.level++
 			g.currentPlay.init(g.level, g.balance, g.level, g.currentPlay.score, betterRotation, canHold, life, g.currentPlay.currentLife)
 			g.fog.reset(g.balance.getHiddenLines(), g.improv.levels[improveHideMove])
 		}

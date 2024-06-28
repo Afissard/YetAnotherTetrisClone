@@ -56,6 +56,7 @@ type tetris struct {
 	removeLineAnimationFrame         int
 	removeLineAnimationStep          int
 	removeLineAnimationStepNumFrames int
+	inAnimation                      bool
 	// invisible blocks handling
 	invisibleLevel int
 	invisibleStep  int
@@ -104,6 +105,8 @@ func (t *tetris) init(level int, balance balancing, speedLevel int, score int, b
 	t.canHold = canHold
 	t.life = life
 	t.currentLife = currentLife
+
+	t.inAnimation = false
 }
 
 func (t *tetris) setUpNext() (dead bool) {
@@ -132,6 +135,20 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, hold
 			t.removeLineAnimationFrame = 0
 		}
 
+		if t.removeLineAnimationStep == 4 && t.removeLineAnimationFrame <= 0 {
+			switch t.toRemoveNum {
+			case 1:
+				t.score += 40 * (level + 1)
+			case 2:
+				t.score += 100 * (level + 1)
+			case 3:
+				t.score += 300 * (level + 1)
+			case 4:
+				t.score += 1200 * (level + 1)
+			}
+			t.numLines += t.toRemoveNum
+		}
+
 		if t.removeLineAnimationStep < 8 {
 			return
 		}
@@ -142,21 +159,10 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, hold
 		playSounds[assets.SoundLinesFallingID] = true
 		t.removeLines()
 
-		switch t.toRemoveNum {
-		case 1:
-			t.score += 40 * (level + 1)
-		case 2:
-			t.score += 100 * (level + 1)
-		case 3:
-			t.score += 300 * (level + 1)
-		case 4:
-			t.score += 1200 * (level + 1)
-		}
-		t.numLines += t.toRemoveNum
-
 		t.toRemove = [4]bool{}
 		t.toRemoveNum = 0
 		t.toCheck = [2]int{}
+		t.inAnimation = false
 
 		dead = t.setUpNext()
 
@@ -279,6 +285,7 @@ func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, hold
 
 		if t.toRemoveNum > 0 {
 			t.removeLineAnimationStep = 1
+			t.inAnimation = true
 			playSounds[assets.SoundLinesVanishingID] = true
 			return
 		}
