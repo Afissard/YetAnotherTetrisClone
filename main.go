@@ -30,6 +30,7 @@ func main() {
 
 	ebiten.SetWindowTitle("Yet Another Tetris Clone")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+	//ebiten.SetWindowSize(640, 576)
 
 	assets.Load(gMultFactor)
 

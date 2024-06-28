@@ -22,3 +22,6 @@ go.work
 go.work.sum
 
 ebitenginegamejam2024
+linux-version
+
+web/*
