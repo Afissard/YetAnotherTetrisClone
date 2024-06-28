@@ -54,5 +54,5 @@ func (g *game) init() {
 	g.firstPlay = true
 	g.numChoices = 3
 	g.improv = setupImprovements()
-	g.goalLevel = 12
+	g.goalLevel = 11
 }
