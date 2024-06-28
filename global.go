@@ -87,6 +87,8 @@ const (
 
 	gMoneyBackHeight int = 195 // height in pixels of the background for displaying money
 
+	gHoldSide int = 181 // size in pixel of the side of the hold block
+
 )
 
 var gSpeeds [gSpeedLevels]int = [gSpeedLevels]int{

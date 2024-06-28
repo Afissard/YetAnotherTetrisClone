@@ -148,7 +148,7 @@ func (t tetrisBlock) writeInGrid(grid *tetrisGrid) (toCheck [2]int) {
 }
 
 // xFrom, yFrom in pixels
-func (t tetrisBlock) draw(screen *ebiten.Image, gray uint8, xFrom, yFrom int) {
+func (t tetrisBlock) draw(screen *ebiten.Image, gray uint8, xFrom, yFrom int, scaling float64) {
 
 	for yRel, line := range t.states[t.r] {
 		yAbs := t.y + yRel
@@ -158,7 +158,8 @@ func (t tetrisBlock) draw(screen *ebiten.Image, gray uint8, xFrom, yFrom int) {
 
 				options := ebiten.DrawImageOptions{}
 				options.ColorScale.ScaleWithColor(color.Gray{gray})
-				options.GeoM.Translate(float64(xFrom+xAbs*gSquareSideSize), float64(yFrom+yAbs*gSquareSideSize))
+				options.GeoM.Scale(scaling, scaling)
+				options.GeoM.Translate(float64(xFrom)+float64(xAbs*gSquareSideSize)*scaling, float64(yFrom)+float64(yAbs*gSquareSideSize)*scaling)
 				screen.DrawImage(assets.ImageSquares.SubImage(image.Rect((t.style-1)*gSquareSideSize, 0, t.style*gSquareSideSize, gSquareSideSize)).(*ebiten.Image), &options)
 			}
 		}

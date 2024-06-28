@@ -401,19 +401,37 @@ func getNewBlock(current, next tetrisBlock) (block tetrisBlock) {
 
 }
 
+func (t tetris) drawHold(screen *ebiten.Image, gray uint8) {
+
+	x := gWidth - 3*gHoldSide/4 - gPlayAreaSide
+	y := gHeight - gNextBoxSide - gHoldSide/2 + 10
+
+	options := ebiten.DrawImageOptions{}
+	options.ColorScale.ScaleWithColor(color.Gray{gray})
+	options.GeoM.Translate(float64(x), float64(y))
+	screen.DrawImage(assets.ImageHold, &options)
+
+	t.heldBlock.draw(screen, gray, x+gSquareSideSize/2, y+gSquareSideSize/2, 0.5)
+
+}
+
 func (t tetris) draw(screen *ebiten.Image, gray uint8) {
 
-	xNextOrigin := gPlayAreaSide + gPlayAreaWidth + gPlayAreaSide + gInfoLeftSide + gInfoShiftNext + gNextMargin
+	xNextOrigin := gPlayAreaSide + gPlayAreaWidth + gPlayAreaSide + gInfoLeftSide + gNextMargin
 	yNextOrigin := gInfoTop + gInfoSmallBoxHeight + gScoreToLevel + gInfoBoxHeight + gLevelToLines + gInfoBoxHeight + gLinesToNext + gNextMargin
 
-	t.nextBlock.draw(screen, gray, xNextOrigin, yNextOrigin)
+	t.nextBlock.draw(screen, gray, xNextOrigin, yNextOrigin, 1)
+
+	if t.canHold {
+		t.drawHold(screen, gray)
+	}
 
 	xOrigin := gPlayAreaSide
 	yOrigin := gSquareSideSize * -gInvisibleLines
 
 	if t.removeLineAnimationStep == 0 {
 		if t.invisibleStep > t.invisibleLevel || t.currentBlock.y < gInvisibleLines {
-			t.currentBlock.draw(screen, gray, xOrigin, yOrigin)
+			t.currentBlock.draw(screen, gray, xOrigin, yOrigin, 1)
 		}
 	}
 
