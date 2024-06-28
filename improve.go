@@ -47,7 +47,7 @@ type improvements struct {
 }
 
 func setupImprovements() (imp improvements) {
-	imp.prices[improveLife] = []int{5, 2, 3}
+	imp.prices[improveLife] = []int{0, 0, 0}
 	imp.prices[improveHold] = []int{12}
 	imp.prices[improveResetAutoDown] = []int{11}
 	imp.prices[improveHideMove] = []int{9, 2, 3}
@@ -89,6 +89,14 @@ func drawContinue(screen *ebiten.Image, x, y int, selected bool, blink int) {
 	}
 }
 
+func drawShopText(screen *ebiten.Image, x, y int, selection int) {
+	if selection < numImprove {
+		options := ebiten.DrawImageOptions{}
+		options.GeoM.Translate(float64(x), float64(y))
+		screen.DrawImage(assets.ImageTextShop.SubImage(image.Rect(0, selection*gTextMalusHeight, gTextMalusWidth, (selection+1)*gTextMalusHeight)).(*ebiten.Image), &options)
+	}
+}
+
 func (g game) drawStateImprove(screen *ebiten.Image) {
 
 	yStart := 256 + gCoinSideSize
@@ -97,6 +105,8 @@ func (g game) drawStateImprove(screen *ebiten.Image) {
 	drawMoney(screen, gWidth/2, yStart-gCoinSideSize, g.money.money, true, 1)
 
 	drawContinue(screen, (gWidth-gContinueWidth)/2, gHeight-gContinueHeight-gTitleMargin, g.improv.current == numImprove, g.improv.arrowBlinkFrame)
+
+	drawShopText(screen, (gWidth-gTextMalusWidth)/2, gHeight-gContinueHeight-gTitleMargin-gTextMalusHeight-gTitleMargin, g.improv.current)
 
 	x := (gWidth - (4*gImproveTextWidth + 3*xSeparator)) / 2
 	y := yStart

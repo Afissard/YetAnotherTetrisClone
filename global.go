@@ -49,7 +49,7 @@ const (
 	gXScoreFromRightSide int = 12 * gMultFactor     // distance from right of screen to right of score
 	gYScoreFromTop       int = 25 * gMultFactor     // distance from top of screen to top of score
 	gXLevelFromRightSide int = gXLinesFromRightSide // distance from right of screen to right of level
-	gYLevelFromTop       int = 56 * gMultFactor     // distance from top of screen to top of score
+	gYLevelFromTop       int = 56 * gMultFactor     // distance from top of screen to top of level
 
 	gInvisibleLines int = 3 // number of hidden lines above the grid
 
@@ -89,6 +89,12 @@ const (
 
 	gHoldSide int = 181 // size in pixel of the side of the hold block
 
+	// size of malus explanition text in pixels
+	gTextMalusHeight int = 293
+	gTextMalusWidth  int = 1281
+
+	// size of hearts in pixels
+	gHeartWidth int = 70
 )
 
 var gSpeeds [gSpeedLevels]int = [gSpeedLevels]int{

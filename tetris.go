@@ -415,7 +415,30 @@ func (t tetris) drawHold(screen *ebiten.Image, gray uint8) {
 
 }
 
+func (t tetris) drawLife(screen *ebiten.Image, gray uint8) {
+
+	if t.life > 0 {
+		x := gPlayAreaSide + gPlayAreaWidth + gPlayAreaSide + gInfoLeftSide + (gInfoWidth-gHeartWidth*t.life)/2
+		y := gYLevelFromTop - 2*gHeartWidth - 20
+
+		options := ebiten.DrawImageOptions{}
+		options.ColorScale.ScaleWithColor(color.Gray{gray})
+		options.GeoM.Translate(float64(x), float64(y))
+		for i := 0; i < t.life; i++ {
+			image := assets.ImageHeart
+			if i < t.currentLife {
+				image = assets.ImageFullHeart
+			}
+			screen.DrawImage(image, &options)
+			options.GeoM.Translate(float64(gHeartWidth), 0)
+		}
+	}
+
+}
+
 func (t tetris) draw(screen *ebiten.Image, gray uint8) {
+
+	t.drawLife(screen, gray)
 
 	xNextOrigin := gPlayAreaSide + gPlayAreaWidth + gPlayAreaSide + gInfoLeftSide + gNextMargin
 	yNextOrigin := gInfoTop + gInfoSmallBoxHeight + gScoreToLevel + gInfoBoxHeight + gLevelToLines + gInfoBoxHeight + gLinesToNext + gNextMargin

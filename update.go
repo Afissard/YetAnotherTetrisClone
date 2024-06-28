@@ -30,7 +30,7 @@ func (g *game) Update() (err error) {
 
 	betterRotation := g.improv.levels[improveResetAutoDown] > 0
 	canHold := g.improv.levels[improveHold] > 0
-	life := g.improv.levels[improveLife]
+	life := g.improv.levels[improveLife]*2 - 1
 
 	switch g.state {
 	case stateTitle:

@@ -20,6 +20,7 @@ package main
 
 import (
 	"image"
+	"image/color"
 	"math"
 	"math/rand"
 
@@ -132,11 +133,15 @@ func drawLevel(screen *ebiten.Image, level, levelMax int, x, y float64) {
 
 func (b balancing) drawChoices(screen *ebiten.Image, cX, cY int) {
 
-	r := float64(gHeight / 6)
+	r := float64(gHeight / 7)
+	var gray uint8 = 200
+	currentGray := gray
 
 	angleShift := float64(b.choiceDirection) * float64(b.transitionFrame) / float64(gChoiceSelectionNumFrame) * (math.Pi * 2) / float64(b.numChoices)
+
 	if !b.inTransition {
 		angleShift = 0
+		currentGray = 255
 	}
 
 	currentX, currentY := math.Cos(math.Pi/2+angleShift)*r, -math.Sin(math.Pi/2+angleShift)*r
@@ -145,6 +150,7 @@ func (b balancing) drawChoices(screen *ebiten.Image, cX, cY int) {
 
 	// current choice
 	options := ebiten.DrawImageOptions{}
+	options.ColorScale.ScaleWithColor(color.Gray{currentGray})
 	options.GeoM.Translate(currentX, currentY)
 	if !b.inTransition {
 		screen.DrawImage(assets.ImageMalus.SubImage(image.Rect(numBalances*gChoiceSize, 0, (numBalances+1)*gChoiceSize, gChoiceSize)).(*ebiten.Image), &options)
@@ -165,6 +171,7 @@ func (b balancing) drawChoices(screen *ebiten.Image, cX, cY int) {
 		y += float64(cY - gChoiceSize/2)
 
 		options := ebiten.DrawImageOptions{}
+		options.ColorScale.ScaleWithColor(color.Gray{gray})
 		options.GeoM.Translate(x, y)
 		screen.DrawImage(assets.ImageMalus.SubImage(image.Rect(theChoice*gChoiceSize, 0, (theChoice+1)*gChoiceSize, gChoiceSize)).(*ebiten.Image), &options)
 		drawLevel(screen, b.levels[theChoice], b.maxLevels[theChoice], x, y)
@@ -178,7 +185,12 @@ func (b balancing) draw(screen *ebiten.Image) {
 	options.GeoM.Translate(float64(gWidth-gLevelCompleteWidth)/2, float64(gTitleMargin))
 	screen.DrawImage(assets.ImageLevelComplete, &options)
 
-	b.drawChoices(screen, gWidth/2, gHeight/2)
+	b.drawChoices(screen, gWidth/2, gHeight/2-30)
+
+	options = ebiten.DrawImageOptions{}
+	options.GeoM.Translate(float64(gWidth-gTextMalusWidth)/2, float64(gHeight-gTextMalusHeight))
+	id := b.choices[b.choice]
+	screen.DrawImage(assets.ImageTextMalus.SubImage(image.Rect(0, id*gTextMalusHeight, gTextMalusWidth, (id+1)*gTextMalusHeight)).(*ebiten.Image), &options)
 }
 
 func newBalance(numChoices int) balancing {

@@ -104,6 +104,22 @@ var ImageMoneyBack *ebiten.Image
 var imageHoldBytes []byte
 var ImageHold *ebiten.Image
 
+//go:embed textesmalus.png
+var imageTextMalusBytes []byte
+var ImageTextMalus *ebiten.Image
+
+//go:embed textesshop.png
+var imageTextShopBytes []byte
+var ImageTextShop *ebiten.Image
+
+//go:embed heartfull.png
+var imageFullHeartBytes []byte
+var ImageFullHeart *ebiten.Image
+
+//go:embed heart.png
+var imageHeartBytes []byte
+var ImageHeart *ebiten.Image
+
 func Load(mult int) {
 	var err error
 
@@ -226,6 +242,30 @@ func Load(mult int) {
 		log.Fatal(err)
 	}
 	ImageHold = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageTextMalusBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageTextMalus = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageTextShopBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageTextShop = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageFullHeartBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageFullHeart = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageHeartBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageHeart = ebiten.NewImageFromImage(imageDecoded)
 }
 
 func resize(img *ebiten.Image, mult int) (res *ebiten.Image) {
