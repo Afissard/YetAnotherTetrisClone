@@ -116,7 +116,7 @@ func (m *moneyHandler) addScore(score int) {
 	m.numActive = 0
 }
 
-func (m *moneyHandler) update() bool {
+func (m *moneyHandler) update() (finished bool, playSounds [assets.NumSounds]bool) {
 
 	if m.score > 0 {
 		if m.score < m.scoreReduction {
@@ -156,6 +156,7 @@ func (m *moneyHandler) update() bool {
 			if m.coins[i].update() {
 				m.displayMoney++
 				m.numActive--
+				playSounds[assets.SoundCoinID] = true
 				if i < m.firstAvailableCoin {
 					m.firstAvailableCoin = i
 				}
@@ -165,7 +166,8 @@ func (m *moneyHandler) update() bool {
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 		if m.score <= 0 {
-			return m.numActive <= 0
+			playSounds[assets.SoundMenuConfirmID] = m.numActive <= 0
+			return m.numActive <= 0, playSounds
 		}
 		m.nextCoin += m.score
 		m.score = 0
@@ -173,7 +175,7 @@ func (m *moneyHandler) update() bool {
 		m.nextCoin = 0
 	}
 
-	return false
+	return false, playSounds
 }
 
 func (m moneyHandler) draw(screen *ebiten.Image) {

@@ -135,6 +135,7 @@ func (t *tetris) setUpNext() {
 func (t *tetris) update(moveDownRequest, moveLeftRequest, moveRightRequest, holdRequest, rotateLeft, rotateRight bool, level int) (playSounds [assets.NumSounds]bool) {
 
 	if t.dead {
+		playSounds[assets.SoundDeathID] = t.deathAnimationFrame == 0
 		t.deathAnimationFrame++
 		if t.deathAnimationFrame >= 90 {
 			t.inAnimation = false

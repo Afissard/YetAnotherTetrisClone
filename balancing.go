@@ -57,7 +57,7 @@ type balancing struct {
 	transitionFrame int
 }
 
-func (b *balancing) update() (end bool) {
+func (b *balancing) update() (end bool, playSounds [assets.NumSounds]bool) {
 
 	if b.inTransition {
 		b.transitionFrame++
@@ -74,11 +74,13 @@ func (b *balancing) update() (end bool) {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+		playSounds[assets.SoundMenuMoveID] = true
 		b.choiceDirection = 1
 		b.inTransition = true
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+		playSounds[assets.SoundMenuMoveID] = true
 		b.choiceDirection = -1
 		b.inTransition = true
 	}
@@ -88,6 +90,7 @@ func (b *balancing) update() (end bool) {
 	if end {
 		b.setChoice(b.choices[b.choice])
 		b.choice = 0
+		playSounds[assets.SoundMenuConfirmID] = true
 	}
 
 	return

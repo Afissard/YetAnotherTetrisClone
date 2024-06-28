@@ -48,12 +48,42 @@ var soundLinesVanishing []byte
 var soundLinesFallingBytes []byte
 var soundLinesFalling []byte
 
+//go:embed menumove.wav
+var soundMenuMoveBytes []byte
+var soundMenuMove []byte
+
+//go:embed menuconfirm.wav
+var soundMenuConfirmBytes []byte
+var soundMenuConfirm []byte
+
+//go:embed coin.wav
+var soundCoinBytes []byte
+var soundCoin []byte
+
+//go:embed buy.wav
+var soundBuyBytes []byte
+var soundBuy []byte
+
+//go:embed death.wav
+var soundDeathBytes []byte
+var soundDeath []byte
+
+//go:embed menuno.wav
+var soundMenuNoBytes []byte
+var soundMenuNo []byte
+
 const (
 	SoundRotationID int = iota
 	SoundLeftRightID
 	SoundTouchGroundID
 	SoundLinesVanishingID
 	SoundLinesFallingID
+	SoundMenuMoveID
+	SoundMenuConfirmID
+	SoundCoinID
+	SoundBuyID
+	SoundDeathID
+	SoundMenuNoID
 	NumSounds
 )
 
@@ -85,6 +115,18 @@ func (s SoundManager) playSound(sound int) {
 		soundBytes = soundLinesVanishing
 	case SoundLinesFallingID:
 		soundBytes = soundLinesFalling
+	case SoundMenuMoveID:
+		soundBytes = soundMenuMove
+	case SoundMenuConfirmID:
+		soundBytes = soundMenuConfirm
+	case SoundCoinID:
+		soundBytes = soundCoin
+	case SoundBuyID:
+		soundBytes = soundBuy
+	case SoundDeathID:
+		soundBytes = soundDeath
+	case SoundMenuNoID:
+		soundBytes = soundMenuNo
 	}
 
 	if len(soundBytes) > 0 {
@@ -141,6 +183,60 @@ func InitAudio() (manager SoundManager) {
 		log.Panic("Audio problem:", error)
 	}
 	soundLinesFalling, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundMenuMoveBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundMenuMove, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundMenuConfirmBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundMenuConfirm, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundCoinBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundCoin, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundBuyBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundBuy, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundDeathBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundDeath, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundMenuNoBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundMenuNo, error = io.ReadAll(sound)
 	if error != nil {
 		log.Panic("Audio problem:", error)
 	}

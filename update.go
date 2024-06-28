@@ -54,14 +54,18 @@ func (g *game) Update() (err error) {
 			g.balance.getChoice()
 		}
 	case stateBalance:
-		if g.balance.update() {
+		finished, playSounds := g.balance.update()
+		g.audio.NextSounds = playSounds
+		if finished {
 			g.state = statePlay
 			g.level++
 			g.currentPlay.init(g.level, g.balance, g.level, g.currentPlay.score, betterRotation, canHold, life, g.currentPlay.currentLife)
 			g.fog.reset(g.balance.getHiddenLines(), g.improv.levels[improveHideMove])
 		}
 	case stateLost:
-		if g.money.update() {
+		finished, playSounds := g.money.update()
+		g.audio.NextSounds = playSounds
+		if finished {
 			g.state = stateImprove
 			g.firstPlay = false
 			g.level = 0
@@ -79,6 +83,7 @@ func (g *game) Update() (err error) {
 
 func (g *game) updateStateTitle() (end bool) {
 	end = inpututil.IsKeyJustPressed(ebiten.KeyEnter)
+	g.audio.NextSounds[assets.SoundMenuConfirmID] = end
 	return
 }
 

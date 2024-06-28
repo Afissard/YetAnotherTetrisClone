@@ -142,6 +142,7 @@ func (g *game) updateStateImprove() bool {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+		g.audio.NextSounds[assets.SoundMenuMoveID] = true
 		g.improv.current = (g.improv.current + numImprove) % (numImprove + 1)
 		for g.improv.current != numImprove && g.improv.levels[g.improv.current] >= len(g.improv.prices[g.improv.current]) {
 			g.improv.current = (g.improv.current + numImprove) % (numImprove + 1)
@@ -149,6 +150,7 @@ func (g *game) updateStateImprove() bool {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+		g.audio.NextSounds[assets.SoundMenuMoveID] = true
 		g.improv.current = (g.improv.current + 1) % (numImprove + 1)
 		for g.improv.current != numImprove && g.improv.levels[g.improv.current] >= len(g.improv.prices[g.improv.current]) {
 			g.improv.current = (g.improv.current + 1) % (numImprove + 1)
@@ -156,6 +158,7 @@ func (g *game) updateStateImprove() bool {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyDown) || inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+		g.audio.NextSounds[assets.SoundMenuMoveID] = true
 		if g.improv.current != numImprove {
 			g.improv.current = numImprove
 		} else {
@@ -168,6 +171,7 @@ func (g *game) updateStateImprove() bool {
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 		if g.improv.current == numImprove {
+			g.audio.NextSounds[assets.SoundMenuConfirmID] = true
 			return true
 		}
 
@@ -175,7 +179,12 @@ func (g *game) updateStateImprove() bool {
 			if g.improv.prices[g.improv.current][g.improv.levels[g.improv.current]] <= g.money.money {
 				g.money.money -= g.improv.prices[g.improv.current][g.improv.levels[g.improv.current]]
 				g.improv.levels[g.improv.current]++
+				g.audio.NextSounds[assets.SoundBuyID] = true
+			} else {
+				g.audio.NextSounds[assets.SoundMenuNoID] = true
 			}
+		} else {
+			g.audio.NextSounds[assets.SoundMenuNoID] = true
 		}
 	}
 
