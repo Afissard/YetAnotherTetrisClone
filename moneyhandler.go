@@ -163,10 +163,14 @@ func (m *moneyHandler) update() bool {
 		}
 	}
 
-	if m.score <= 0 && m.numActive == 0 {
-		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-			return true
+	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+		if m.score <= 0 {
+			return m.numActive <= 0
 		}
+		m.nextCoin += m.score
+		m.score = 0
+		m.displayMoney += m.nextCoin / 100
+		m.nextCoin = 0
 	}
 
 	return false
