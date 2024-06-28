@@ -27,7 +27,7 @@ import (
 )
 
 // draw a number right alligned in a rectangle which top right is given by (x, y) in pixels
-func drawNumberAt(screen *ebiten.Image, gray uint8, x, y int, num int) {
+func drawNumberAt(screen *ebiten.Image, gray uint8, x, y int, num int, over int) {
 
 	if num < 0 {
 		num = 0
@@ -38,6 +38,22 @@ func drawNumberAt(screen *ebiten.Image, gray uint8, x, y int, num int) {
 	options.ColorScale.ScaleWithColor(color.Gray{gray})
 
 	options.GeoM.Translate(float64(x), float64(y))
+
+	if over > 0 {
+		if over >= 10 {
+			options.GeoM.Translate(float64(gSquareSideSize), 0)
+		}
+		for over > 0 {
+			digit := over % 10
+			over = over / 10
+
+			options.GeoM.Translate(float64(-gSquareSideSize), float64(0))
+			screen.DrawImage(assets.ImageDigits.SubImage(image.Rect(digit*gSquareSideSize, 0, (digit+1)*gSquareSideSize, gSquareSideSize)).(*ebiten.Image), &options)
+		}
+
+		options.GeoM.Translate(float64(-gSquareSideSize), float64(0))
+		screen.DrawImage(assets.ImageDigits.SubImage(image.Rect(10*gSquareSideSize, 0, 11*gSquareSideSize, gSquareSideSize)).(*ebiten.Image), &options)
+	}
 
 	atLeastOnce := true
 	for num > 0 || atLeastOnce {

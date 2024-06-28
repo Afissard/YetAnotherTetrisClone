@@ -47,10 +47,10 @@ type improvements struct {
 }
 
 func setupImprovements() (imp improvements) {
-	imp.prices[improveLife] = []int{0, 0, 0}
-	imp.prices[improveHold] = []int{12}
-	imp.prices[improveResetAutoDown] = []int{11}
-	imp.prices[improveHideMove] = []int{9, 2, 3}
+	imp.prices[improveLife] = []int{10, 50, 150}
+	imp.prices[improveHold] = []int{150}
+	imp.prices[improveResetAutoDown] = []int{300}
+	imp.prices[improveHideMove] = []int{20, 75, 250}
 	return
 }
 

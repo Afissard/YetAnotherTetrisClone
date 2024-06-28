@@ -46,8 +46,12 @@ func (g *game) Update() (err error) {
 			g.money.addScore(g.currentPlay.score)
 		}
 		if g.currentPlay.numLines >= g.balance.getGoalLines() {
-			g.state = stateBalance
 			g.level++
+			if g.level >= g.goalLevel {
+				g.state = stateWon
+				return nil
+			}
+			g.state = stateBalance
 			g.balance.getChoice()
 		}
 	case stateBalance:

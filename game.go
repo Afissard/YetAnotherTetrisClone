@@ -26,6 +26,7 @@ const (
 	stateBalance
 	stateLost
 	stateImprove
+	stateWon
 )
 
 type game struct {
@@ -33,6 +34,7 @@ type game struct {
 	firstPlay   bool
 	currentPlay tetris
 	level       int
+	goalLevel   int
 	balance     balancing
 	numChoices  int
 	audio       assets.SoundManager
@@ -43,8 +45,9 @@ type game struct {
 
 func (g *game) init() {
 	g.audio = assets.InitAudio()
-	g.state = stateImprove //stateTitle
+	g.state = stateTitle
 	g.firstPlay = true
 	g.numChoices = 3
 	g.improv = setupImprovements()
+	g.goalLevel = 10
 }
