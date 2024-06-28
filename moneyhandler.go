@@ -170,7 +170,11 @@ func (m *moneyHandler) update() bool {
 
 func (m moneyHandler) draw(screen *ebiten.Image) {
 
-	drawMoney(screen, gWidth/2, gHeight/2, m.displayMoney, true)
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Translate(float64(gWidth-gYouLoseWidth)/2, float64(gTitleMargin))
+	screen.DrawImage(assets.ImageYouLose, &options)
+
+	drawMoney(screen, gWidth/2, gHeight/2, m.displayMoney, true, 1)
 
 	for _, c := range m.coins {
 		if c.active {
@@ -180,7 +184,7 @@ func (m moneyHandler) draw(screen *ebiten.Image) {
 
 }
 
-func drawMoney(screen *ebiten.Image, x, y int, money int, symbolFirst bool) {
+func drawMoney(screen *ebiten.Image, x, y int, money int, symbolFirst bool, scaling float64) {
 	options := ebiten.DrawImageOptions{}
 
 	num := money
@@ -194,10 +198,11 @@ func drawMoney(screen *ebiten.Image, x, y int, money int, symbolFirst bool) {
 	}
 	displaySize++
 
-	options.GeoM.Translate(float64(x+(displaySize*gCoinSideSize)/2), float64(y-gCoinSideSize/2))
+	options.GeoM.Scale(scaling, scaling)
+	options.GeoM.Translate(float64(x)+float64(displaySize*gCoinSideSize)*scaling/2, float64(y)-float64(gCoinSideSize)*scaling/2)
 
 	if !symbolFirst {
-		options.GeoM.Translate(float64(-gCoinSideSize), float64(0))
+		options.GeoM.Translate(float64(-gCoinSideSize)*scaling, float64(0))
 		screen.DrawImage(assets.ImageCoin, &options)
 	}
 
@@ -208,12 +213,12 @@ func drawMoney(screen *ebiten.Image, x, y int, money int, symbolFirst bool) {
 		digit := num % 10
 		num = num / 10
 
-		options.GeoM.Translate(float64(-gCoinSideSize), float64(0))
+		options.GeoM.Translate(float64(-gCoinSideSize)*scaling, float64(0))
 		screen.DrawImage(assets.ImageBigdigits.SubImage(image.Rect(digit*gCoinSideSize, 0, (digit+1)*gCoinSideSize, gCoinSideSize)).(*ebiten.Image), &options)
 	}
 
 	if symbolFirst {
-		options.GeoM.Translate(float64(-gCoinSideSize), float64(0))
+		options.GeoM.Translate(float64(-gCoinSideSize)*scaling, float64(0))
 		screen.DrawImage(assets.ImageCoin, &options)
 	}
 }

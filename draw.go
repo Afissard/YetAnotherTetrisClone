@@ -22,7 +22,6 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/loig/ebitenginegamejam2024/assets"
 )
 
@@ -38,6 +37,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 		g.drawPlay(screen, 100)
 		g.money.draw(screen)
 	case stateImprove:
+		g.drawShop(screen)
 		g.drawStateImprove(screen)
 	}
 
@@ -46,11 +46,24 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 }
 
+func (g game) drawShop(screen *ebiten.Image) {
+
+	screen.DrawImage(assets.ImageShopBack, &ebiten.DrawImageOptions{})
+
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Translate(float64(gWidth-gShopTitleWidth)/2, float64(gTitleMargin))
+	screen.DrawImage(assets.ImageShopTitle, &options)
+
+}
+
 func (g game) drawPlay(screen *ebiten.Image, gray uint8) {
 	// draw background
 	options := ebiten.DrawImageOptions{}
 	options.ColorScale.ScaleWithColor(color.Gray{gray})
 	screen.DrawImage(assets.ImageBack, &options)
+	// draw death lines
+	g.drawDeathLines(screen, gray)
+
 	// draw current play
 	g.currentPlay.draw(screen, gray)
 	// draw number of lines destroyed
@@ -61,8 +74,23 @@ func (g game) drawPlay(screen *ebiten.Image, gray uint8) {
 	drawNumberAt(screen, gray, gWidth-gXLevelFromRightSide+gMultFactor, gYLevelFromTop, g.level)
 	// hide lines
 	g.fog.draw(screen)
+}
+
+func (g game) drawDeathLines(screen *ebiten.Image, gray uint8) {
 	// death lines
-	if !g.firstPlay || g.level > 0 {
-		vector.StrokeRect(screen, float32(gPlayAreaSide), 0, float32(gPlayAreaWidth), float32(g.currentPlay.deathLines*gSquareSideSize), 2, color.Black, false)
+	options := ebiten.DrawImageOptions{}
+
+	options.ColorScale.ScaleWithColor(color.Gray{gray})
+	scaling := float64(gSquareSideSize) / float64(gDangerSide)
+	options.GeoM.Scale(scaling, scaling)
+	options.GeoM.Translate(float64(gPlayAreaSide), 0)
+	mult := 1
+	for line := 0; line < g.currentPlay.deathLines; line++ {
+		for pos := 0; pos < gPlayAreaWidthInBlocks; pos++ {
+			screen.DrawImage(assets.ImageDanger, &options)
+			options.GeoM.Translate(float64(mult*gSquareSideSize), 0)
+		}
+		mult = -mult
+		options.GeoM.Translate(float64(mult*gSquareSideSize), float64(gSquareSideSize))
 	}
 }

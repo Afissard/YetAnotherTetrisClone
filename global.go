@@ -53,10 +53,10 @@ const (
 
 	gInvisibleLines int = 3 // number of hidden lines above the grid
 
-	gMultFactor int = 4 // multiply the size of old graphics
+	gMultFactor int = 8 // multiply the size of old graphics
 
-	gChoiceSize      int = 120 // size in pixels of the side of a balancing choice
-	gChoiceLevelSize int = 16  // size in pixels of the icone giving the level of a balancing choice
+	gChoiceSize      int = 300 // size in pixels of the side of a balancing choice
+	gChoiceLevelSize int = 70  // size in pixels of the icone giving the level of a balancing choice
 
 	gChoiceSelectionNumFrame int = 30 // number of frames for changing balancing choice
 
@@ -64,10 +64,23 @@ const (
 
 	gInvisibleNumFrames int = 60 // num frames for one step of invisibility
 
-	gCoinSideSize int = 32 // size of the side of the coin image in pixels
+	gCoinSideSize int = 128 // size of the side of the coin image in pixels
 
-	gImproveTextWidth  int = 128 // width of text for improvements in pixels
-	gImproveTextHeight int = 64  // height of text for improvements in pixels
+	gImproveTextWidth  int = 218 // width of text for improvements in pixels
+	gImproveTextHeight int = 218 // height of text for improvements in pixels
+
+	gDangerSide int = 218 // width/height of the danger zone symbol in pixels
+
+	gLevelCompleteWidth int = 762 // width of the title of the end of level screen in pixels
+	gYouLoseWidth       int = 762 // width of the title of the lose screen in pixels
+	gShopTitleWidth     int = 662 // width of the title of the shop screen in pixels
+
+	gTitleMargin int = 20 // margin on top of the end of level/lose/shop screens in pixels
+
+	gMaxWidth int = 199 // width of "maxed" in pixels
+
+	gArrowWidth  int = 64 // width of the improvement selection arrow in pixels
+	gArrowHeight int = 64 // height of the improvement selection arrow in pixels
 
 )
 

@@ -72,6 +72,26 @@ var ImageMax *ebiten.Image
 var imageFogBytes []byte
 var ImageFog *ebiten.Image
 
+//go:embed danger.png
+var imageDangerBytes []byte
+var ImageDanger *ebiten.Image
+
+//go:embed levelcomplete.png
+var imageLevelCompleteBytes []byte
+var ImageLevelComplete *ebiten.Image
+
+//go:embed youlose.png
+var imageYouLoseBytes []byte
+var ImageYouLose *ebiten.Image
+
+//go:embed shopfond.png
+var imageShopBackBytes []byte
+var ImageShopBack *ebiten.Image
+
+//go:embed shoptitle.png
+var imageShopTitleBytes []byte
+var ImageShopTitle *ebiten.Image
+
 func Load(mult int) {
 	var err error
 
@@ -146,6 +166,36 @@ func Load(mult int) {
 		log.Fatal(err)
 	}
 	ImageFog = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageDangerBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageDanger = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageLevelCompleteBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageLevelComplete = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageYouLoseBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageYouLose = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageShopBackBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageShopBack = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageShopTitleBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageShopTitle = ebiten.NewImageFromImage(imageDecoded)
 }
 
 func resize(img *ebiten.Image, mult int) (res *ebiten.Image) {

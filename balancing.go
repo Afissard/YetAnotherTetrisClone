@@ -94,28 +94,32 @@ func (b *balancing) update() (end bool) {
 
 func drawLevel(screen *ebiten.Image, level, levelMax int, x, y float64) {
 
-	space := 0.2
-	dx := float64(gChoiceLevelSize) * (space + 1)
+	factor := 0.7
+	size := factor * float64(gChoiceLevelSize)
 
-	steps := levelMax / 2
+	space := 0.1
+	dx := float64(size) * (space + 1)
+
+	steps := levelMax - levelMax/2
 	if levelMax <= 3 {
 		steps = levelMax
 	}
 	centerShift := (float64(gChoiceSize) - float64(steps)*dx - space) / 2
-	yShift := float64(gChoiceSize) - 2*dx
+	yShift := float64(gChoiceSize) - 2.2*dx
 
 	options := ebiten.DrawImageOptions{}
+	options.GeoM.Scale(factor, factor)
 	options.GeoM.Translate(x-dx+centerShift, y+yShift)
 
 	for i := 0; i < levelMax; i++ {
-		if i == levelMax/2 && levelMax > 3 {
+		if i == levelMax-levelMax/2 && levelMax > 3 {
 			// secondLine
-			shiftAdjust := -float64(gChoiceLevelSize) * 0.6
+			shiftAdjust := -float64(size) * 0.6
 			if levelMax%2 == 0 {
 				shiftAdjust = 0
 			}
 
-			options.GeoM.Translate(-dx*float64(levelMax/2)+shiftAdjust, float64(gChoiceLevelSize)*1.2)
+			options.GeoM.Translate(-dx*float64(levelMax/2)+shiftAdjust, float64(size)*0.8)
 		}
 		options.GeoM.Translate(dx, 0)
 		shift := 0
@@ -126,10 +130,9 @@ func drawLevel(screen *ebiten.Image, level, levelMax int, x, y float64) {
 	}
 }
 
-func (b balancing) draw(screen *ebiten.Image) {
+func (b balancing) drawChoices(screen *ebiten.Image, cX, cY int) {
 
-	r := float64(gHeight / 5)
-	cX, cY := gWidth/2, 2*gHeight/3
+	r := float64(gHeight / 6)
 
 	angleShift := float64(b.choiceDirection) * float64(b.transitionFrame) / float64(gChoiceSelectionNumFrame) * (math.Pi * 2) / float64(b.numChoices)
 	if !b.inTransition {
@@ -164,8 +167,18 @@ func (b balancing) draw(screen *ebiten.Image) {
 		options := ebiten.DrawImageOptions{}
 		options.GeoM.Translate(x, y)
 		screen.DrawImage(assets.ImageMalus.SubImage(image.Rect(theChoice*gChoiceSize, 0, (theChoice+1)*gChoiceSize, gChoiceSize)).(*ebiten.Image), &options)
+		drawLevel(screen, b.levels[theChoice], b.maxLevels[theChoice], x, y)
 	}
 
+}
+
+func (b balancing) draw(screen *ebiten.Image) {
+
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Translate(float64(gWidth-gLevelCompleteWidth)/2, float64(gTitleMargin))
+	screen.DrawImage(assets.ImageLevelComplete, &options)
+
+	b.drawChoices(screen, gWidth/2, gHeight/2)
 }
 
 func newBalance(numChoices int) balancing {

@@ -41,10 +41,10 @@ type improvements struct {
 }
 
 func setupImprovements() (imp improvements) {
-	imp.prices[improveLife] = []int{1, 2, 3}
-	imp.prices[improveHold] = []int{1}
-	imp.prices[improveResetAutoDown] = []int{1}
-	imp.prices[improveHideMove] = []int{1, 2, 3}
+	imp.prices[improveLife] = []int{5, 2, 3}
+	imp.prices[improveHold] = []int{12}
+	imp.prices[improveResetAutoDown] = []int{11}
+	imp.prices[improveHideMove] = []int{9, 2, 3}
 	return
 }
 
@@ -52,46 +52,58 @@ func (g game) drawStateImprove(screen *ebiten.Image) {
 
 	yStart := 128
 	xSeparator := 100
+	ySeparator := xSeparator
 
-	drawMoney(screen, gWidth/2, yStart, g.money.money, true)
+	//drawMoney(screen, gWidth/2, yStart, g.money.money, true)
 
-	options := ebiten.DrawImageOptions{}
-	options.GeoM.Translate(float64(gWidth-gImproveTextWidth)/2, float64(yStart))
+	x := (gWidth - (2*gImproveTextWidth + xSeparator)) / 2
+	y := yStart
 
+	xTranslation := 0
+	firstLine := true
 	for i := 0; i <= numImprove; i++ {
-		options.GeoM.Translate(0, float64(gImproveTextHeight))
+
+		options := ebiten.DrawImageOptions{}
+		options.GeoM.Translate(float64(x), float64(y))
 		screen.DrawImage(assets.ImageImprovements.SubImage(image.Rect(0, i*gImproveTextHeight, gImproveTextWidth, (i+1)*gImproveTextWidth)).(*ebiten.Image), &options)
 
 		if i != numImprove {
 			if len(g.improv.prices[i]) > g.improv.levels[i] {
-				drawMoney(screen, (gWidth+gImproveTextWidth)/2+xSeparator, yStart+(i+1)*gImproveTextHeight+gImproveTextHeight/2, g.improv.prices[i][g.improv.levels[i]], false)
+				drawMoney(screen, x+3*gImproveTextWidth/5, y+gImproveTextHeight, g.improv.prices[i][g.improv.levels[i]], false, 0.5)
 			} else {
-				shift := gImproveTextWidth + xSeparator
-				options.GeoM.Translate(float64(shift), 0)
+				options.GeoM.Translate(float64(gImproveTextWidth-gMaxWidth)/2, float64(gImproveTextHeight)-10)
 				screen.DrawImage(assets.ImageMax, &options)
-				options.GeoM.Translate(-float64(shift), 0)
 			}
 		}
 
 		if g.improv.current == i {
-			options.GeoM.Translate(float64(-gImproveTextHeight), 0)
+			options.GeoM.Translate(float64(-gArrowWidth), float64(gImproveTextHeight-gArrowHeight)/2)
 			screen.DrawImage(assets.ImageImprovementsArrow, &options)
-			options.GeoM.Translate(float64(gImproveTextHeight), 0)
 		}
+
+		if !firstLine || i < numImprove/2-1 {
+			x += gImproveTextWidth + xSeparator
+			xTranslation += gImproveTextWidth + xSeparator
+		} else {
+			x -= xTranslation
+			y += gImproveTextHeight + ySeparator
+			firstLine = false
+		}
+
 	}
 
 }
 
 func (g *game) updateStateImprove() bool {
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyUp) || inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
 		g.improv.current = (g.improv.current + numImprove) % (numImprove + 1)
 		for g.improv.current != numImprove && g.improv.levels[g.improv.current] >= len(g.improv.prices[g.improv.current]) {
 			g.improv.current = (g.improv.current + numImprove) % (numImprove + 1)
 		}
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyDown) || inpututil.IsKeyJustPressed(ebiten.KeyRight) {
 		g.improv.current = (g.improv.current + 1) % (numImprove + 1)
 		for g.improv.current != numImprove && g.improv.levels[g.improv.current] >= len(g.improv.prices[g.improv.current]) {
 			g.improv.current = (g.improv.current + 1) % (numImprove + 1)
