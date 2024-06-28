@@ -26,21 +26,46 @@ import (
 
 func (g *game) Update() (err error) {
 
+	// play sounds
+	g.audio.PlaySounds()
 	g.audio.NextSounds = [assets.NumSounds]bool{}
 
-	g.audio.UpdateMusic(0.7)
+	if g.state != stateControls && g.state != stateWon {
+		g.audio.UpdateMusic(0.7)
+	}
 
 	betterRotation := g.improv.levels[improveResetAutoDown] > 0
 	canHold := g.improv.levels[improveHold] > 0
 	life := g.improv.levels[improveLife]*2 - 1
 
 	switch g.state {
+	case stateControls:
+		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+			g.audio.NextSounds[assets.SoundMenuConfirmID] = true
+			g.state = stateTitle
+			g.titleFrame = 0
+		}
+	case stateCredits:
+		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+			g.audio.NextSounds[assets.SoundMenuConfirmID] = true
+			g.state = stateTitle
+			g.titleFrame = 0
+		}
 	case stateTitle:
+		g.titleFrame++
+		if g.titleFrame >= numArrowBlinkFrame {
+			g.titleFrame = 0
+		}
 		if g.updateStateTitle() {
-			g.state = statePlay
-			g.balance = newBalance(g.numChoices)
-			g.currentPlay.init(g.level, g.balance, g.level, 0, betterRotation, canHold, life, life)
-			g.fog.reset(g.balance.getHiddenLines(), g.improv.levels[improveHideMove])
+			if g.titleSelect == 0 {
+				g.firstPlay = false
+				g.state = statePlay
+				g.balance = newBalance(g.numChoices)
+				g.currentPlay.init(g.level, g.balance, g.level, 0, betterRotation, canHold, life, life)
+				g.fog.reset(g.balance.getHiddenLines(), g.improv.levels[improveHideMove])
+			} else {
+				g.state = stateCredits
+			}
 		}
 	case statePlay:
 		if g.updateStatePlay() {
@@ -50,6 +75,8 @@ func (g *game) Update() (err error) {
 		if !g.currentPlay.inAnimation && g.currentPlay.numLines >= g.balance.getGoalLines() {
 			if g.level+1 >= g.goalLevel {
 				g.state = stateWon
+				g.audio.NextSounds[assets.SoundBuyID] = true
+				g.audio.StopMusic()
 				return nil
 			}
 			g.state = stateBalance
@@ -69,7 +96,6 @@ func (g *game) Update() (err error) {
 		g.audio.NextSounds = playSounds
 		if finished {
 			g.state = stateImprove
-			g.firstPlay = false
 			g.level = 0
 			g.improv.reset()
 		}
@@ -77,6 +103,16 @@ func (g *game) Update() (err error) {
 	case stateImprove:
 		if g.updateStateImprove() {
 			g.state = stateTitle
+			g.titleFrame = 0
+		}
+	case stateWon:
+		g.winFrame++
+		if g.winFrame >= len(gAnimRocket) {
+			g.winFrame = 0
+			g.audio.NextSounds[assets.SoundTouchGroundID] = true
+		}
+		if g.winFrame == 16 {
+			g.audio.NextSounds[assets.SoundRocketID] = true
 		}
 	}
 
@@ -84,6 +120,11 @@ func (g *game) Update() (err error) {
 }
 
 func (g *game) updateStateTitle() (end bool) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyRight) || inpututil.IsKeyJustPressed(ebiten.KeyDown) || inpututil.IsKeyJustPressed(ebiten.KeyLeft) || inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+		g.audio.NextSounds[assets.SoundMenuMoveID] = true
+		g.titleSelect = (g.titleSelect + 1) % 2
+	}
+
 	end = inpututil.IsKeyJustPressed(ebiten.KeyEnter)
 	g.audio.NextSounds[assets.SoundMenuConfirmID] = end
 	return

@@ -20,6 +20,7 @@ package main
 
 import (
 	"image/color"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/loig/ebitenginegamejam2024/assets"
@@ -28,6 +29,21 @@ import (
 func (g *game) Draw(screen *ebiten.Image) {
 
 	switch g.state {
+	case stateControls:
+		screen.DrawImage(assets.ImageControls, &ebiten.DrawImageOptions{})
+	case stateCredits:
+		screen.DrawImage(assets.ImageCredits, &ebiten.DrawImageOptions{})
+	case stateTitle:
+		if g.firstPlay {
+			screen.DrawImage(assets.ImageTitle1, &ebiten.DrawImageOptions{})
+		} else {
+			screen.DrawImage(assets.ImageTitle2, &ebiten.DrawImageOptions{})
+		}
+		if g.titleSelect == 0 {
+			drawArrow(screen, gWidth/2-150, 3*gHeight/4+20, math.Pi/2, g.titleFrame)
+		} else {
+			drawArrow(screen, gWidth/2-250, 3*gHeight/4+128, math.Pi/2, g.titleFrame)
+		}
 	case statePlay:
 		g.drawPlay(screen, 255)
 	case stateBalance:
@@ -39,10 +55,13 @@ func (g *game) Draw(screen *ebiten.Image) {
 	case stateImprove:
 		g.drawShop(screen)
 		g.drawStateImprove(screen)
+	case stateWon:
+		screen.DrawImage(assets.ImageWin, &ebiten.DrawImageOptions{})
+		options := ebiten.DrawImageOptions{}
+		options.GeoM.Translate(float64(gWidth/2)-175, float64(gHeight/2)-140)
+		options.GeoM.Translate(0, -float64(gAnimRocket[g.winFrame%len(gAnimRocket)]))
+		screen.DrawImage(assets.ImageRocket, &options)
 	}
-
-	// play sounds
-	g.audio.PlaySounds()
 
 }
 

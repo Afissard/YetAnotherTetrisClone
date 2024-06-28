@@ -120,6 +120,30 @@ var ImageFullHeart *ebiten.Image
 var imageHeartBytes []byte
 var ImageHeart *ebiten.Image
 
+//go:embed controls.png
+var imageControlsBytes []byte
+var ImageControls *ebiten.Image
+
+//go:embed title1.png
+var imageTitle1Bytes []byte
+var ImageTitle1 *ebiten.Image
+
+//go:embed credits.png
+var imageCreditsBytes []byte
+var ImageCredits *ebiten.Image
+
+//go:embed title2.png
+var imageTitle2Bytes []byte
+var ImageTitle2 *ebiten.Image
+
+//go:embed win.png
+var imageWinBytes []byte
+var ImageWin *ebiten.Image
+
+//go:embed rocket.png
+var imageRocketBytes []byte
+var ImageRocket *ebiten.Image
+
 func Load(mult int) {
 	var err error
 
@@ -266,6 +290,42 @@ func Load(mult int) {
 		log.Fatal(err)
 	}
 	ImageHeart = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageControlsBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageControls = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageTitle1Bytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageTitle1 = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageCreditsBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageCredits = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageTitle2Bytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageTitle2 = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageWinBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageWin = ebiten.NewImageFromImage(imageDecoded)
+
+	imageDecoded, _, err = image.Decode(bytes.NewReader(imageRocketBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ImageRocket = ebiten.NewImageFromImage(imageDecoded)
 }
 
 func resize(img *ebiten.Image, mult int) (res *ebiten.Image) {

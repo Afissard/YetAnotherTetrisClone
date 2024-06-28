@@ -75,6 +75,10 @@ var soundDeath []byte
 var soundMenuNoBytes []byte
 var soundMenuNo []byte
 
+//go:embed rocket.wav
+var soundRocketBytes []byte
+var soundRocket []byte
+
 //go:embed tetris.mp3
 var musicBytes []byte
 var music *audio.InfiniteLoop
@@ -91,6 +95,7 @@ const (
 	SoundBuyID
 	SoundDeathID
 	SoundMenuNoID
+	SoundRocketID
 	NumSounds
 )
 
@@ -108,6 +113,13 @@ func (s *SoundManager) UpdateMusic(volume float64) {
 			s.music.Play()
 		}
 		s.music.SetVolume(volume)
+	}
+}
+
+// stop the music
+func (s *SoundManager) StopMusic() {
+	if s.music != nil {
+		s.music.Pause()
 	}
 }
 
@@ -146,6 +158,8 @@ func (s SoundManager) playSound(sound int) {
 		soundBytes = soundDeath
 	case SoundMenuNoID:
 		soundBytes = soundMenuNo
+	case SoundRocketID:
+		soundBytes = soundRocket
 	}
 
 	if len(soundBytes) > 0 {
@@ -271,6 +285,15 @@ func InitAudio() (manager SoundManager) {
 		log.Panic("Audio problem:", error)
 	}
 	soundMenuNo, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundRocketBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundRocket, error = io.ReadAll(sound)
 	if error != nil {
 		log.Panic("Audio problem:", error)
 	}

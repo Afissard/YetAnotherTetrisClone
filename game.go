@@ -27,6 +27,8 @@ const (
 	stateLost
 	stateImprove
 	stateWon
+	stateControls
+	stateCredits
 )
 
 type game struct {
@@ -41,13 +43,16 @@ type game struct {
 	money       moneyHandler
 	improv      improvements
 	fog         fog
+	titleSelect int
+	titleFrame  int
+	winFrame    int
 }
 
 func (g *game) init() {
 	g.audio = assets.InitAudio()
-	g.state = stateTitle
+	g.state = stateControls
 	g.firstPlay = true
 	g.numChoices = 3
 	g.improv = setupImprovements()
-	g.goalLevel = 10
+	g.goalLevel = 12
 }
