@@ -19,9 +19,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 import (
+	"flag"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/loig/ebitenginegamejam2024/assets"
 )
+
+func init() {
+	flag.IntVar(&selectedKeyBind, "k", 0, "Select the keybind you want to use:\n- 1 for wasd\n- 0 or nothing for default")
+	flag.Parse()
+}
 
 func main() {
 

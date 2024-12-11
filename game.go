@@ -57,8 +57,14 @@ func (g *game) init() {
 	g.improv = setupImprovements()
 	g.goalLevel = 11
 
-	g.inputs = KeyboardInputs{
-		kmap: defaultKeys,
-		//kmap: wasdKeys,
+	switch selectedKeyBind {
+	case 1:
+		g.inputs = KeyboardInputs{
+			kmap: wasdKeys,
+		}
+	default:
+		g.inputs = KeyboardInputs{
+			kmap: defaultKeys,
+		}
 	}
 }

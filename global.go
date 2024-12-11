@@ -114,3 +114,5 @@ var gAnimRocket []int = []int{
 	198, 184, 180, 165, 150, 135, 120, 105, 90, 75, 60,
 	45, 30, 15, 0,
 }
+
+var selectedKeyBind int
