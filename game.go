@@ -46,6 +46,7 @@ type game struct {
 	titleSelect int
 	titleFrame  int
 	winFrame    int
+	inputs      KeyboardInputs
 }
 
 func (g *game) init() {
@@ -55,4 +56,9 @@ func (g *game) init() {
 	g.numChoices = 3
 	g.improv = setupImprovements()
 	g.goalLevel = 11
+
+	g.inputs = KeyboardInputs{
+		kmap: defaultKeys,
+		//kmap: wasdKeys,
+	}
 }

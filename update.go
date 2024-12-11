@@ -25,6 +25,8 @@ import (
 )
 
 func (g *game) Update() (err error) {
+	// inputs
+	g.inputs.update()
 
 	// play sounds
 	g.audio.PlaySounds()
@@ -46,10 +48,11 @@ func (g *game) Update() (err error) {
 			g.titleFrame = 0
 		}
 	case stateCredits:
-		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+		if g.inputs.enter { // inpututil.IsKeyJustPressed(ebiten.KeyEnter)
 			g.audio.NextSounds[assets.SoundMenuConfirmID] = true
 			g.state = stateTitle
 			g.titleFrame = 0
+
 		}
 	case stateTitle:
 		g.titleFrame++
@@ -120,24 +123,32 @@ func (g *game) Update() (err error) {
 }
 
 func (g *game) updateStateTitle() (end bool) {
-	if inpututil.IsKeyJustPressed(ebiten.KeyRight) || inpututil.IsKeyJustPressed(ebiten.KeyDown) || inpututil.IsKeyJustPressed(ebiten.KeyLeft) || inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+	if g.inputs.right || g.inputs.down || g.inputs.left || g.inputs.up {
+		// inpututil.IsKeyJustPressed(ebiten.KeyRight) || inpututil.IsKeyJustPressed(ebiten.KeyDown) || inpututil.IsKeyJustPressed(ebiten.KeyLeft) || inpututil.IsKeyJustPressed(ebiten.KeyUp)
 		g.audio.NextSounds[assets.SoundMenuMoveID] = true
 		g.titleSelect = (g.titleSelect + 1) % 2
 	}
 
-	end = inpututil.IsKeyJustPressed(ebiten.KeyEnter)
+	//end = inpututil.IsKeyJustPressed(ebiten.KeyEnter)
+	end = g.inputs.enter
 	g.audio.NextSounds[assets.SoundMenuConfirmID] = end
 	return
 }
 
 func (g *game) updateStatePlay() bool {
 	sounds := g.currentPlay.update(
-		ebiten.IsKeyPressed(ebiten.KeyDown),
-		ebiten.IsKeyPressed(ebiten.KeyLeft),
-		ebiten.IsKeyPressed(ebiten.KeyRight),
-		inpututil.IsKeyJustPressed(ebiten.KeyUp),
-		inpututil.IsKeyJustPressed(ebiten.KeyAlt),
-		inpututil.IsKeyJustPressed(ebiten.KeySpace),
+		g.inputs.down,
+		g.inputs.left,
+		g.inputs.right,
+		g.inputs.up,
+		g.inputs.alt,
+		g.inputs.space,
+		//ebiten.IsKeyPressed(ebiten.KeyDown),
+		//ebiten.IsKeyPressed(ebiten.KeyLeft),
+		//ebiten.IsKeyPressed(ebiten.KeyRight),
+		//inpututil.IsKeyJustPressed(ebiten.KeyUp),
+		//inpututil.IsKeyJustPressed(ebiten.KeyAlt),
+		//inpututil.IsKeyJustPressed(ebiten.KeySpace),
 		g.level,
 	)
 
